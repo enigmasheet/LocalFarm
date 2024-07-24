@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+body{
+    font-family: "Nunito Sans", sans-serif;
+}
+
+
+label{
+    @apply block font-semibold text-lg text-slate-800
+}
+
+select{
+    @apply border p-2 w-40  rounded-md focus:border-2 focus:border-teal-400
+}
+
+input,textarea{
+    @apply w-full border rounded-md focus:border-teal-400 focus:outline p-2
+}

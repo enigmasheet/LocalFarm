@@ -1,0 +1,26 @@
+{
+  "greenhouses": [
+    {
+      "name": "ajlkdn",
+      "plantname": "jkndjkanjkd",
+      "temp": "jkdnajkndjk",
+      "humidity": "jkdnajkd",
+      "moisture": "jkdakj",
+      "id": 1
+    }
+  ],
+  "contact": [],
+  "users": [],
+  "realTimeData": [
+   {
+    "id":1,
+    "greenhousesId":"",
+    "detail":[ 
+    {"time":"12",
+    "temp": "jkdnajkndjk",
+    "humidity": "jkdnajkd",
+    "moisture": "jkdakj"}
+    ]
+   }
+  ]
+}
