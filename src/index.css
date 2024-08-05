@@ -3,19 +3,68 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-body{
+
+/* Base Styles */
+body {
+    @apply font-sans text-gray-800;
     font-family: "Nunito Sans", sans-serif;
 }
 
-
-label{
-    @apply block font-semibold text-lg text-slate-800
+a {
+    @apply text-teal-400 hover:text-teal-600 transition-colors;
 }
 
-select{
-    @apply border p-2 w-40  rounded-md focus:border-2 focus:border-teal-400
+
+
+/* Form Elements */
+label {
+    @apply block font-semibold text-lg text-slate-800 mb-1;
 }
 
-input,textarea{
-    @apply w-full border rounded-md focus:border-teal-400 focus:outline p-2
+select {
+    @apply border border-gray-300 p-2 w-full max-w-xs rounded-md focus:border-teal-400 focus:ring-2 focus:ring-teal-400;
+}
+
+input, textarea {
+    @apply w-full border border-gray-300 rounded-md focus:border-teal-400 focus:ring-2 focus:ring-teal-400 p-2;
+}
+
+/* Responsive Styles */
+@media (max-width: 640px) {
+    /* Mobile Styles */
+    .container {
+        @apply px-4;
+    }
+
+    .sidebar {
+        @apply w-full;
+    }
+}
+
+@media (min-width: 640px) {
+    /* Small screens and up */
+    .container {
+        @apply px-6;
+    }
+}
+
+@media (min-width: 768px) {
+    /* Medium screens and up */
+    .container {
+        @apply px-8;
+    }
+}
+
+@media (min-width: 1024px) {
+    /* Large screens and up */
+    .container {
+        @apply px-12;
+    }
+}
+
+@media (min-width: 1280px) {
+    /* Extra Large screens and up */
+    .container {
+        @apply px-16;
+    }
 }
