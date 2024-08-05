@@ -9,6 +9,10 @@ const Body = () => {
   const [loading, setLoading] = useState(true);
   const [latestData, setLatestData] = useState(null);
   const [thresholds, setThresholds] = useState({});
+  const [autoControl, setAutoControl] = useState({
+    waterPump: false,
+    ventilation: false,
+  });
 
   useEffect(() => {
     const fetchGreenhouseData = async () => {
@@ -30,6 +34,16 @@ const Body = () => {
         );
 
         setLatestData(latest);
+
+        // Automatic control logic
+        const shouldTurnOnVentilation = latest.temperature.value > greenhouseResponse.data.temp;
+        const shouldTurnOnWaterPump = latest.moisture.value < greenhouseResponse.data.moisture;
+
+        setAutoControl({
+          waterPump: shouldTurnOnWaterPump,
+          ventilation: shouldTurnOnVentilation,
+        });
+
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -38,6 +52,10 @@ const Body = () => {
     };
 
     fetchGreenhouseData();
+
+    // Update data every 60 seconds
+    const intervalId = setInterval(fetchGreenhouseData, 60000);
+    return () => clearInterval(intervalId);
   }, [id]);
 
   const handleDelete = async () => {
@@ -56,6 +74,10 @@ const Body = () => {
         status: prevData.water_pump.status === 'on' ? 'off' : 'on',
       },
     }));
+    setAutoControl((prevControl) => ({
+      ...prevControl,
+      waterPump: !prevControl.waterPump,
+    }));
   };
 
   const toggleVentilation = () => {
@@ -65,51 +87,68 @@ const Body = () => {
         status: prevData.ventilation.status === 'on' ? 'off' : 'on',
       },
     }));
+    setAutoControl((prevControl) => ({
+      ...prevControl,
+      ventilation: !prevControl.ventilation,
+    }));
   };
 
   if (loading) {
-    return <div className="text-center p-8">Loading...</div>;
+    return <div className="text-center p-8 text-xl">Loading...</div>;
   }
 
   if (!greenhouse || !latestData) {
-    return <div className="text-center p-8">Greenhouse not found</div>;
+    return <div className="text-center p-8 text-xl">Greenhouse not found</div>;
   }
 
   return (
-    <div className="flex flex-col min-h-screen p-4 md:p-6 lg:p-8 bg-gray-100">
+    <div className="flex flex-col min-h-screen p-4 md:p-6 lg:p-8 bg-gray-50">
       <div className="flex flex-col lg:flex-row gap-8 h-full">
         {/* Chart */}
-        <div className="flex-1 bg-white p-6 rounded-lg shadow-md flex flex-col">
+        <div className="flex-1 bg-white p-6 rounded-lg shadow-lg flex flex-col">
           <div className="flex-1 mb-6">
             <RealTimeChart greenhouseId={id} thresholds={thresholds} />
           </div>
         </div>
 
         {/* Details and Controls */}
-        <div className="flex flex-col lg:w-1/3 bg-white p-6 rounded-lg shadow-md">
+        <div className="flex flex-col lg:w-1/3 bg-white p-6 rounded-lg shadow-lg">
           <div className="mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold mb-2">{greenhouse.name}</h1>
-            <h2 className="text-xl font-semibold mb-4">{greenhouse.plantname}</h2>
-            <p className="text-lg mb-2">Temperature: {latestData.temperature.value} {latestData.temperature.unit}</p>
-            <p className="text-lg mb-2">Humidity: {latestData.humidity.value} {latestData.humidity.unit}</p>
-            <p className="text-lg">Moisture: {latestData.moisture.value} {latestData.moisture.unit}</p>
+            <h1 className="text-2xl md:text-3xl font-bold mb-2 text-gray-800">{greenhouse.name}</h1>
+            <h2 className="text-xl font-semibold mb-4 text-gray-600">{greenhouse.plantname}</h2>
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-gray-700 mb-2">Current Data</h3>
+              <div className="space-y-2">
+                <p className="text-lg text-gray-800">Temperature: <span className="font-bold">{latestData.temperature.value} {latestData.temperature.unit}</span></p>
+                <p className="text-lg text-gray-800">Humidity: <span className="font-bold">{latestData.humidity.value} {latestData.humidity.unit}</span></p>
+                <p className="text-lg text-gray-800">Moisture: <span className="font-bold">{latestData.moisture.value} {latestData.moisture.unit}</span></p>
+              </div>
+            </div>
+            <div className="mb-6">
+              <h3 className="text-lg font-semibold text-gray-700 mb-2">Threshold Data</h3>
+              <div className="space-y-2">
+                <p className="text-lg text-gray-800">Temperature Threshold: <span className="font-bold">{thresholds.temperature} °C</span></p>
+                <p className="text-lg text-gray-800">Humidity Threshold: <span className="font-bold">{thresholds.humidity} %</span></p>
+                <p className="text-lg text-gray-800">Moisture Threshold: <span className="font-bold">{thresholds.moisture} %</span></p>
+              </div>
+            </div>
           </div>
 
           <div className="flex flex-col gap-4">
             <button
-              className={`text-white font-bold py-2 px-4 rounded-md ${latestData.water_pump.status === 'on' ? 'bg-red-500' : 'bg-green-500'} transition duration-300`}
+              className={`text-white font-bold py-2 px-4 rounded-md ${autoControl.waterPump ? 'bg-green-600' : 'bg-red-600'} transition duration-300`}
               onClick={toggleWaterPump}
             >
-              {latestData.water_pump.status === 'on' ? 'Turn Water Pump Off' : 'Turn Water Pump On'}
+              {autoControl.waterPump ? ' Water Pump On' : ' Water Pump Off'}
             </button>
             <button
-              className={`text-white font-bold py-2 px-4 rounded-md ${latestData.ventilation.status === 'on' ? 'bg-red-500' : 'bg-green-500'} transition duration-300`}
+              className={`text-white font-bold py-2 px-4 rounded-md ${autoControl.ventilation ? 'bg-green-600' : 'bg-red-600'} transition duration-300`}
               onClick={toggleVentilation}
             >
-              {latestData.ventilation.status === 'on' ? 'Turn Ventilation Off' : 'Turn Ventilation On'}
+              {autoControl.ventilation ? 'Ventilation On' : 'Ventilation Off'}
             </button>
             <button
-              className="bg-red-500 text-white font-bold py-2 px-4 rounded-md w-full transition duration-300"
+              className="bg-red-600 text-white font-bold py-2 px-4 rounded-md w-full transition duration-300"
               onClick={handleDelete}
             >
               Delete Greenhouse

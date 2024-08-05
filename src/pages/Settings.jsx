@@ -132,7 +132,7 @@ const Settings = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700">Temperature</label>
+          <label className="block text-gray-700">Threshold Temperature</label>
           <input
             type="text"
             name="temp"
@@ -142,7 +142,7 @@ const Settings = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700">Humidity</label>
+          <label className="block text-gray-700">Threshold Humidity</label>
           <input
             type="text"
             name="humidity"
@@ -152,7 +152,7 @@ const Settings = () => {
           />
         </div>
         <div className="mb-4">
-          <label className="block text-gray-700">Soil Moisture</label>
+          <label className="block text-gray-700">Threshold Soil Moisture</label>
           <input
             type="text"
             name="moisture"

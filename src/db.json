@@ -1,48 +1,174 @@
 {
   "greenhouses": [
     {
-      "name": "Greenhouse 1",
-      "plantname": "Tomato",
-      "temp": "25",
-      "humidity": "23",
-      "moisture": "35",
+      "name": "Greenhouse A",
+      "plantname": "Lettuce",
+      "temp": "22",
+      "humidity": "50",
+      "moisture": "40",
       "id": 1
     },
     {
-      "name": "Greenhouse 2",
-      "plantname": "Banana",
-      "temp": "15",
-      "humidity": "25",
-      "moisture": "63",
+      "name": "Greenhouse B",
+      "plantname": "Cucumber",
+      "temp": "18",
+      "humidity": "60",
+      "moisture": "55",
       "id": 2
     },
     {
-      "name": "Greenhouse 3",
-      "plantname": "Potato",
-      "temp": "52",
-      "humidity": "62",
-      "moisture": "45",
+      "name": "Greenhouse C",
+      "plantname": "Bell Pepper",
+      "temp": "28",
+      "humidity": "45",
+      "moisture": "35",
       "id": 3
+    },
+    {
+      "name": "Greenhouse D",
+      "plantname": "Spinach",
+      "temp": "20",
+      "humidity": "55",
+      "moisture": "50",
+      "id": 4
+    },
+    {
+      "name": "Greenhouse E",
+      "plantname": "Radish",
+      "temp": "24",
+      "humidity": "53",
+      "moisture": "45",
+      "id": 5
     }
   ],
   "contact": [
     {
-      "name": "Abhay Kumar Mandal",
-      "email": "abhaymandal321@gmail.com",
-      "message": "Hi,I would like to know the working principle behind the project? Thank you",
+      "name": "John Doe",
+      "email": "johndoe@example.com",
+      "message": "Can you provide more details about the greenhouse automation system?",
       "id": 1
+    },
+    {
+      "name": "Jane Smith",
+      "email": "janesmith@example.com",
+      "message": "I am interested in the climate control features of the greenhouses.",
+      "id": 2
     }
   ],
-  "users": [],
+  "users": [
+    {
+      "name": "Manager",
+      "role": "manager",
+      "id": 1
+    },
+    {
+      "name": "Technician",
+      "role": "technician",
+      "id": 2
+    },
+    {
+      "name": "Assistant",
+      "role": "assistant",
+      "id": 3
+    }
+  ],
   "realTimeData": [
     {
-      "timestamp": "2024-07-25T14:00:00Z",
+      "timestamp": "2024-08-01T09:00:00Z",
       "temperature": {
-        "value": 24,
+        "value": 23,
         "unit": "C"
       },
       "humidity": {
+        "value": 49,
+        "unit": "%"
+      },
+      "moisture": {
+        "value": 41,
+        "unit": "%"
+      },
+      "water_pump": {
+        "status": "off"
+      },
+      "ventilation": {
+        "status": "on"
+      },
+      "greenhouseId": 1
+    },
+    {
+      "timestamp": "2024-08-01T09:05:00Z",
+      "temperature": {
         "value": 22,
+        "unit": "C"
+      },
+      "humidity": {
+        "value": 50,
+        "unit": "%"
+      },
+      "moisture": {
+        "value": 40,
+        "unit": "%"
+      },
+      "water_pump": {
+        "status": "on"
+      },
+      "ventilation": {
+        "status": "off"
+      },
+      "greenhouseId": 1
+    },
+    {
+      "timestamp": "2024-08-01T09:10:00Z",
+      "temperature": {
+        "value": 19,
+        "unit": "C"
+      },
+      "humidity": {
+        "value": 61,
+        "unit": "%"
+      },
+      "moisture": {
+        "value": 56,
+        "unit": "%"
+      },
+      "water_pump": {
+        "status": "off"
+      },
+      "ventilation": {
+        "status": "on"
+      },
+      "greenhouseId": 2
+    },
+    {
+      "timestamp": "2024-08-01T09:15:00Z",
+      "temperature": {
+        "value": 20,
+        "unit": "C"
+      },
+      "humidity": {
+        "value": 62,
+        "unit": "%"
+      },
+      "moisture": {
+        "value": 57,
+        "unit": "%"
+      },
+      "water_pump": {
+        "status": "on"
+      },
+      "ventilation": {
+        "status": "off"
+      },
+      "greenhouseId": 2
+    },
+    {
+      "timestamp": "2024-08-01T09:20:00Z",
+      "temperature": {
+        "value": 29,
+        "unit": "C"
+      },
+      "humidity": {
+        "value": 44,
         "unit": "%"
       },
       "moisture": {
@@ -50,95 +176,139 @@
         "unit": "%"
       },
       "water_pump": {
+        "status": "off"
+      },
+      "ventilation": {
+        "status": "on"
+      },
+      "greenhouseId": 3
+    },
+    {
+      "timestamp": "2024-08-01T09:25:00Z",
+      "temperature": {
+        "value": 30,
+        "unit": "C"
+      },
+      "humidity": {
+        "value": 43,
+        "unit": "%"
+      },
+      "moisture": {
+        "value": 33,
+        "unit": "%"
+      },
+      "water_pump": {
+        "status": "off"
+      },
+      "ventilation": {
+        "status": "on"
+      },
+      "greenhouseId": 3
+    },
+    {
+      "timestamp": "2024-08-01T09:30:00Z",
+      "temperature": {
+        "value": 21,
+        "unit": "C"
+      },
+      "humidity": {
+        "value": 52,
+        "unit": "%"
+      },
+      "moisture": {
+        "value": 47,
+        "unit": "%"
+      },
+      "water_pump": {
         "status": "on"
       },
       "ventilation": {
         "status": "off"
       },
-      "greenhouseId": 1
+      "greenhouseId": 4
     },
     {
-      "timestamp": "2024-07-25T14:05:00Z",
+      "timestamp": "2024-08-01T09:35:00Z",
+      "temperature": {
+        "value": 22,
+        "unit": "C"
+      },
+      "humidity": {
+        "value": 53,
+        "unit": "%"
+      },
+      "moisture": {
+        "value": 48,
+        "unit": "%"
+      },
+      "water_pump": {
+        "status": "on"
+      },
+      "ventilation": {
+        "status": "off"
+      },
+      "greenhouseId": 4
+    },
+    {
+      "timestamp": "2024-08-01T09:40:00Z",
       "temperature": {
         "value": 24,
         "unit": "C"
       },
       "humidity": {
-        "value": 21,
+        "value": 54,
         "unit": "%"
       },
       "moisture": {
-        "value": 36,
+        "value": 50,
         "unit": "%"
       },
       "water_pump": {
-        "status": "off"
+        "status": "on"
       },
       "ventilation": {
-        "status": "off"
+        "status": "on"
       },
-      "greenhouseId": 1
+      "greenhouseId": 5
     },
     {
-      "timestamp": "2024-07-25T14:10:00Z",
+      "timestamp": "2024-08-01T09:45:00Z",
       "temperature": {
         "value": 25,
         "unit": "C"
       },
       "humidity": {
-        "value": 20,
+        "value": 55,
         "unit": "%"
       },
       "moisture": {
-        "value": 37,
+        "value": 51,
         "unit": "%"
       },
       "water_pump": {
-        "status": "off"
+        "status": "on"
       },
       "ventilation": {
         "status": "on"
       },
-      "greenhouseId": 1
+      "greenhouseId": 5
     },
     {
-      "timestamp": "2024-07-25T14:15:00Z",
-      "temperature": {
-        "value": 25,
-        "unit": "C"
-      },
-      "humidity": {
-        "value": 21,
-        "unit": "%"
-      },
-      "moisture": {
-        "value": 38,
-        "unit": "%"
-      },
-      "water_pump": {
-        "status": "off"
-      },
-      "ventilation": {
-        "status": "on"
-      },
-      "greenhouseId": 1
-    },
-    {
-      "timestamp": "2024-07-25T14:20:00Z",
+      "timestamp": "2024-08-01T09:50:00Z",
       "temperature": {
         "value": 26,
         "unit": "C"
       },
       "humidity": {
-        "value": 22,
+        "value": 56,
         "unit": "%"
       },
       "moisture": {
-        "value": 39,
+        "value": 52,
         "unit": "%"
       },
       "water_pump": {
-        "status": "off"
+        "status": "on"
       },
       "ventilation": {
         "status": "on"
@@ -146,105 +316,39 @@
       "greenhouseId": 1
     },
     {
-      "timestamp": "2024-07-25T14:25:00Z",
+      "timestamp": "2024-08-01T09:55:00Z",
       "temperature": {
-        "value": 15,
-        "unit": "C"
-      },
-      "humidity": {
-        "value": 26,
-        "unit": "%"
-      },
-      "moisture": {
-        "value": 64,
-        "unit": "%"
-      },
-      "water_pump": {
-        "status": "on"
-      },
-      "ventilation": {
-        "status": "off"
-      },
-      "greenhouseId": 2
-    },
-    {
-      "timestamp": "2024-07-25T14:30:00Z",
-      "temperature": {
-        "value": 16,
-        "unit": "C"
-      },
-      "humidity": {
         "value": 27,
-        "unit": "%"
-      },
-      "moisture": {
-        "value": 65,
-        "unit": "%"
-      },
-      "water_pump": {
-        "status": "on"
-      },
-      "ventilation": {
-        "status": "off"
-      },
-      "greenhouseId": 2
-    },
-    {
-      "timestamp": "2024-07-25T14:35:00Z",
-      "temperature": {
-        "value": 17,
         "unit": "C"
       },
       "humidity": {
-        "value": 28,
+        "value": 57,
         "unit": "%"
       },
       "moisture": {
-        "value": 66,
+        "value": 53,
         "unit": "%"
       },
       "water_pump": {
-        "status": "on"
-      },
-      "ventilation": {
         "status": "off"
       },
-      "greenhouseId": 2
-    },
-    {
-      "timestamp": "2024-07-25T14:40:00Z",
-      "temperature": {
-        "value": 18,
-        "unit": "C"
-      },
-      "humidity": {
-        "value": 29,
-        "unit": "%"
-      },
-      "moisture": {
-        "value": 67,
-        "unit": "%"
-      },
-      "water_pump": {
+      "ventilation": {
         "status": "on"
       },
-      "ventilation": {
-        "status": "off"
-      },
-      "greenhouseId": 2
+      "greenhouseId": 1
     },
     {
-      "timestamp": "2024-07-25T14:45:00Z",
+      "timestamp": "2024-08-01T10:00:00Z",
       "temperature": {
         "value": 19,
         "unit": "C"
       },
       "humidity": {
-        "value": 30,
+        "value": 62,
         "unit": "%"
       },
       "moisture": {
-        "value": 68,
+        "value": 58,
         "unit": "%"
       },
       "water_pump": {
@@ -256,57 +360,79 @@
       "greenhouseId": 2
     },
     {
-      "timestamp": "2024-07-25T14:00:00Z",
+      "timestamp": "2024-08-01T10:05:00Z",
       "temperature": {
-        "value": 51,
+        "value": 20,
         "unit": "C"
       },
       "humidity": {
-        "value": 61,
+        "value": 63,
         "unit": "%"
       },
       "moisture": {
-        "value": 44,
-        "unit": "%"
-      },
-      "water_pump": {
-        "status": "on"
-      },
-      "ventilation": {
-        "status": "on"
-      },
-      "greenhouseId": 3
-    },
-    {
-      "timestamp": "2024-07-25T14:05:00Z",
-      "temperature": {
-        "value": 52,
-        "unit": "C"
-      },
-      "humidity": {
-        "value": 60,
-        "unit": "%"
-      },
-      "moisture": {
-        "value": 45,
-        "unit": "%"
-      },
-      "water_pump": {
-        "status": "on"
-      },
-      "ventilation": {
-        "status": "on"
-      },
-      "greenhouseId": 3
-    },
-    {
-      "timestamp": "2024-07-25T14:10:00Z",
-      "temperature": {
-        "value": 52,
-        "unit": "C"
-      },
-      "humidity": {
         "value": 59,
+        "unit": "%"
+      },
+      "water_pump": {
+        "status": "on"
+      },
+      "ventilation": {
+        "status": "off"
+      },
+      "greenhouseId": 2
+    },
+    {
+      "timestamp": "2024-08-01T10:10:00Z",
+      "temperature": {
+        "value": 30,
+        "unit": "C"
+      },
+      "humidity": {
+        "value": 42,
+        "unit": "%"
+      },
+      "moisture": {
+        "value": 32,
+        "unit": "%"
+      },
+      "water_pump": {
+        "status": "off"
+      },
+      "ventilation": {
+        "status": "on"
+      },
+      "greenhouseId": 3
+    },
+    {
+      "timestamp": "2024-08-01T10:15:00Z",
+      "temperature": {
+        "value": 31,
+        "unit": "C"
+      },
+      "humidity": {
+        "value": 41,
+        "unit": "%"
+      },
+      "moisture": {
+        "value": 31,
+        "unit": "%"
+      },
+      "water_pump": {
+        "status": "off"
+      },
+      "ventilation": {
+        "status": "on"
+      },
+      "greenhouseId": 3
+    },
+    {
+      "timestamp": "2024-08-01T10:20:00Z",
+      "temperature": {
+        "value": 22,
+        "unit": "C"
+      },
+      "humidity": {
+        "value": 50,
         "unit": "%"
       },
       "moisture": {
@@ -317,128 +443,18 @@
         "status": "on"
       },
       "ventilation": {
-        "status": "on"
+        "status": "off"
       },
-      "greenhouseId": 3
+      "greenhouseId": 4
     },
     {
-      "timestamp": "2024-07-25T14:15:00Z",
+      "timestamp": "2024-08-01T10:25:00Z",
       "temperature": {
-        "value": 53,
+        "value": 23,
         "unit": "C"
       },
       "humidity": {
-        "value": 58,
-        "unit": "%"
-      },
-      "moisture": {
-        "value": 47,
-        "unit": "%"
-      },
-      "water_pump": {
-        "status": "on"
-      },
-      "ventilation": {
-        "status": "on"
-      },
-      "greenhouseId": 3
-    },
-    {
-      "timestamp": "2024-07-25T14:20:00Z",
-      "temperature": {
-        "value": 53,
-        "unit": "C"
-      },
-      "humidity": {
-        "value": 57,
-        "unit": "%"
-      },
-      "moisture": {
-        "value": 48,
-        "unit": "%"
-      },
-      "water_pump": {
-        "status": "on"
-      },
-      "ventilation": {
-        "status": "on"
-      },
-      "greenhouseId": 3
-    },
-    {
-      "timestamp": "2024-07-25T14:00:00Z",
-      "temperature": {
         "value": 51,
-        "unit": "C"
-      },
-      "humidity": {
-        "value": 61,
-        "unit": "%"
-      },
-      "moisture": {
-        "value": 44,
-        "unit": "%"
-      },
-      "water_pump": {
-        "status": "on"
-      },
-      "ventilation": {
-        "status": "on"
-      },
-      "greenhouseId": 4
-    },
-    {
-      "timestamp": "2024-07-25T14:05:00Z",
-      "temperature": {
-        "value": 52,
-        "unit": "C"
-      },
-      "humidity": {
-        "value": 60,
-        "unit": "%"
-      },
-      "moisture": {
-        "value": 45,
-        "unit": "%"
-      },
-      "water_pump": {
-        "status": "on"
-      },
-      "ventilation": {
-        "status": "on"
-      },
-      "greenhouseId": 4
-    },
-    {
-      "timestamp": "2024-07-25T14:10:00Z",
-      "temperature": {
-        "value": 52,
-        "unit": "C"
-      },
-      "humidity": {
-        "value": 59,
-        "unit": "%"
-      },
-      "moisture": {
-        "value": 46,
-        "unit": "%"
-      },
-      "water_pump": {
-        "status": "on"
-      },
-      "ventilation": {
-        "status": "on"
-      },
-      "greenhouseId": 4
-    },
-    {
-      "timestamp": "2024-07-25T14:15:00Z",
-      "temperature": {
-        "value": 53,
-        "unit": "C"
-      },
-      "humidity": {
-        "value": 58,
         "unit": "%"
       },
       "moisture": {
@@ -449,22 +465,22 @@
         "status": "on"
       },
       "ventilation": {
-        "status": "on"
+        "status": "off"
       },
       "greenhouseId": 4
     },
     {
-      "timestamp": "2024-07-25T14:20:00Z",
+      "timestamp": "2024-08-01T10:30:00Z",
       "temperature": {
-        "value": 53,
+        "value": 25,
         "unit": "C"
       },
       "humidity": {
-        "value": 57,
+        "value": 54,
         "unit": "%"
       },
       "moisture": {
-        "value": 48,
+        "value": 49,
         "unit": "%"
       },
       "water_pump": {
@@ -473,7 +489,29 @@
       "ventilation": {
         "status": "on"
       },
-      "greenhouseId": 4
+      "greenhouseId": 5
+    },
+    {
+      "timestamp": "2024-08-01T10:35:00Z",
+      "temperature": {
+        "value": 26,
+        "unit": "C"
+      },
+      "humidity": {
+        "value": 55,
+        "unit": "%"
+      },
+      "moisture": {
+        "value": 50,
+        "unit": "%"
+      },
+      "water_pump": {
+        "status": "on"
+      },
+      "ventilation": {
+        "status": "on"
+      },
+      "greenhouseId": 5
     }
   ]
 }

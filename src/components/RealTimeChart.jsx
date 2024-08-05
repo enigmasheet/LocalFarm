@@ -1,25 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import { LineChart, Line, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import axios from 'axios';
-import CustomReferenceLine from './CustomReferenceLine'; // Import the custom wrapper
-import CustomXAxis from './CustomXAxis'; // Import the custom wrapper
-import CustomYAxis from './CustomYAxis'; // Import the custom wrapper
+import CustomReferenceLine from './CustomReferenceLine';
+import CustomXAxis from './CustomXAxis';
+import CustomYAxis from './CustomYAxis';
 
-// Fetch real-time data
 const fetchRealTimeData = async (greenhouseId) => {
   try {
     const response = await axios.get(`http://localhost:3000/realTimeData`);
-    return response.data.filter(entry => entry.greenhouseId === greenhouseId) || [];
+    const filteredData = response.data.filter(entry => String(entry.greenhouseId) === String(greenhouseId)) || [];
+    return filteredData;
   } catch (error) {
     console.error("Error fetching real-time data:", error);
     return [];
   }
 };
 
-// Fetch greenhouse thresholds
-const fetchGreenhouseThresholds = async (greenhouseId) => {
+const fetchGreenhouseThresholds = async (id) => {
   try {
-    const response = await axios.get(`http://localhost:3000/greenhouses/${greenhouseId}`);
+    const response = await axios.get(`http://localhost:3000/greenhouses/${id}`);
     return response.data;
   } catch (error) {
     console.error("Error fetching greenhouse thresholds:", error);
@@ -48,18 +47,30 @@ const RealTimeChart = ({ greenhouseId }) => {
 
     const getThresholds = async () => {
       const fetchedThresholds = await fetchGreenhouseThresholds(greenhouseId);
-      setThresholds(fetchedThresholds);
+      const humidityThreshold = Number(fetchedThresholds.humidity) || 0;
+      const moistureThreshold = Number(fetchedThresholds.moisture) || 0;
+      const temperatureThreshold = Number(fetchedThresholds.temp) || 0;
+    
+      console.log('Fetched thresholds:', {
+        humidity: humidityThreshold,
+        moisture: moistureThreshold,
+        temperature: temperatureThreshold
+      });
+    
+      setThresholds({
+        humidity: humidityThreshold,
+        moisture: moistureThreshold,
+        temperature: temperatureThreshold
+      });
     };
+    
 
-    // Fetch initial data and thresholds
     getData();
     getThresholds();
 
-    // Polling interval for data
     const id = setInterval(getData, 60000); // Update data every 60 seconds
     setIntervalId(id);
 
-    // Cleanup on component unmount
     return () => clearInterval(id);
   }, [greenhouseId]);
 
@@ -72,14 +83,35 @@ const RealTimeChart = ({ greenhouseId }) => {
           <CustomYAxis />
           <Tooltip />
           <Legend />
-
           <Line type="monotone" dataKey="temperature" stroke="#8884d8" name="Temperature (°C)" />
           <Line type="monotone" dataKey="humidity" stroke="#82ca9d" name="Humidity (%)" />
           <Line type="monotone" dataKey="moisture" stroke="#ffc658" name="Moisture (%)" />
 
-          {/* Threshold lines using the custom wrapper */}
-          <CustomReferenceLine y={thresholds.humidity} stroke="#82ca9d" strokeDasharray="3 3" label="Humidity Threshold" />
-          <CustomReferenceLine y={thresholds.moisture} stroke="#ffc658" strokeDasharray="3 3" label="Moisture Threshold" />
+          {/* Threshold lines */}
+          {thresholds.temperature > 0 && (
+            <CustomReferenceLine
+              y={thresholds.temperature}
+              stroke="#8884d8"
+              strokeDasharray="3 3"
+              label="Temperature Threshold"
+            />
+          )}
+          {thresholds.humidity > 0 && (
+            <CustomReferenceLine
+              y={thresholds.humidity}
+              stroke="#82ca9d"
+              strokeDasharray="3 3"
+              label="Humidity Threshold"
+            />
+          )}
+          {thresholds.moisture > 0 && (
+            <CustomReferenceLine
+              y={thresholds.moisture}
+              stroke="#ffc658"
+              strokeDasharray="3 3"
+              label="Moisture Threshold"
+            />
+          )}
         </LineChart>
       </ResponsiveContainer>
     </div>

@@ -1,15 +1,10 @@
 import React from 'react';
-import { ReferenceLine } from 'recharts';
+import { ReferenceLine, Label } from 'recharts';
 
-const CustomReferenceLine = ({ y, stroke, strokeDasharray, label }) => {
-  return (
-    <ReferenceLine
-      y={y}
-      stroke={stroke}
-      strokeDasharray={strokeDasharray}
-      label={{ position: 'right', value: label, fill: stroke, fontSize: 12 }}
-    />
-  );
-};
+const CustomReferenceLine = ({ y, stroke, strokeDasharray, label }) => (
+  <ReferenceLine y={y} stroke={stroke} strokeDasharray={strokeDasharray}>
+    <Label value={label} position="top" />
+  </ReferenceLine>
+);
 
 export default CustomReferenceLine;
