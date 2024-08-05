@@ -56,10 +56,6 @@ const Settings = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const updatedGreenhouse = {
-      ...formData,
-      id: selectedGreenhouse ? selectedGreenhouse.id : greenhouses.length + 1,
-    };
     const method = selectedGreenhouse ? "put" : "post";
     const url = selectedGreenhouse
       ? `http://localhost:3000/greenhouses/${selectedGreenhouse.id}`
@@ -68,7 +64,10 @@ const Settings = () => {
     axios({
       method,
       url,
-      data: updatedGreenhouse,
+      data: {
+        ...formData,
+        ...(selectedGreenhouse ? { id: selectedGreenhouse.id } : {}),
+      },
     })
       .then((response) => {
         if (selectedGreenhouse) {

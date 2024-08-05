@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import GHlist from './GHlist';
 import { useAuth } from '../AuthContext';
+import { Link } from 'react-router-dom';
 
 const Sidebar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -35,11 +36,11 @@ const Sidebar = () => {
 
           {/* Add Greenhouse Button */}
           <div className="p-4 bg-gray-800">
-            <a href="/settings">
+            <Link to="/settings">
               <button className="w-full py-2 px-4 rounded-md bg-blue-600 hover:bg-blue-700 text-white font-semibold transition duration-300">
                 Add Greenhouse
               </button>
-            </a>
+            </Link>
           </div>
         </div>
       </div>

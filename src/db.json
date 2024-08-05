@@ -26,15 +26,6 @@
       "id": 3
     },
     {
-      "name": "Greenhouse D",
-      "plantname": "Spinach",
-      "temp": "20",
-      "humidity": "55",
-      "moisture": "50",
-      "id": 4,
-      "ownerID": 1
-    },
-    {
       "name": "Greenhouse E",
       "plantname": "Tomato",
       "temp": "25",
@@ -42,6 +33,14 @@
       "moisture": "45",
       "id": 5,
       "ownerID": 1
+    },
+    {
+      "name": "j",
+      "plantname": "kjjkn",
+      "temp": "30",
+      "humidity": "43",
+      "moisture": "32",
+      "id": 6
     }
   ],
   "contact": [

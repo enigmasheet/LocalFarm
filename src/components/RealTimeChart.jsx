@@ -29,20 +29,23 @@ const fetchGreenhouseThresholds = async (id) => {
 const RealTimeChart = ({ greenhouseId }) => {
   const [data, setData] = useState([]);
   const [thresholds, setThresholds] = useState({});
-  const [intervalId, setIntervalId] = useState(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     const getData = async () => {
       const fetchedData = await fetchRealTimeData(greenhouseId);
-      const processedData = fetchedData.map(entry => ({
-        timestamp: new Date(entry.timestamp).toLocaleTimeString(),
-        temperature: entry.temperature.value,
-        humidity: entry.humidity.value,
-        moisture: entry.moisture.value,
-        waterPumpStatus: entry.water_pump.status,
-        ventilationStatus: entry.ventilation.status
-      }));
-      setData(processedData);
+      if (isMounted) {
+        const processedData = fetchedData.map(entry => ({
+          timestamp: new Date(entry.timestamp).toLocaleTimeString(),
+          temperature: entry.temperature.value,
+          humidity: entry.humidity.value,
+          moisture: entry.moisture.value,
+          waterPumpStatus: entry.water_pump.status,
+          ventilationStatus: entry.ventilation.status
+        }));
+        setData(processedData);
+      }
     };
 
     const getThresholds = async () => {
@@ -50,28 +53,25 @@ const RealTimeChart = ({ greenhouseId }) => {
       const humidityThreshold = Number(fetchedThresholds.humidity) || 0;
       const moistureThreshold = Number(fetchedThresholds.moisture) || 0;
       const temperatureThreshold = Number(fetchedThresholds.temp) || 0;
-    
-      console.log('Fetched thresholds:', {
-        humidity: humidityThreshold,
-        moisture: moistureThreshold,
-        temperature: temperatureThreshold
-      });
-    
-      setThresholds({
-        humidity: humidityThreshold,
-        moisture: moistureThreshold,
-        temperature: temperatureThreshold
-      });
+
+      if (isMounted) {
+        setThresholds({
+          humidity: humidityThreshold,
+          moisture: moistureThreshold,
+          temperature: temperatureThreshold
+        });
+      }
     };
-    
 
     getData();
     getThresholds();
 
     const id = setInterval(getData, 60000); // Update data every 60 seconds
-    setIntervalId(id);
 
-    return () => clearInterval(id);
+    return () => {
+      isMounted = false;
+      clearInterval(id);
+    };
   }, [greenhouseId]);
 
   return (

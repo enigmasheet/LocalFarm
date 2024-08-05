@@ -28,21 +28,31 @@ const Body = () => {
         const statusResponse = await axios.get(`http://localhost:3000/realTimeData?greenhouseId=${id}`);
         const statusData = statusResponse.data;
 
-        const latest = statusData.reduce((latest, current) =>
-          new Date(current.timestamp) > new Date(latest.timestamp) ? current : latest,
-          statusData[0]
-        );
+        if (statusData.length > 0) {
+          const latest = statusData.reduce((latest, current) =>
+            new Date(current.timestamp) > new Date(latest.timestamp) ? current : latest,
+            statusData[0]
+          );
 
-        setLatestData(latest);
+          setLatestData(latest);
 
-        // Automatic control logic
-        const shouldTurnOnVentilation = latest.temperature.value > greenhouseResponse.data.temp;
-        const shouldTurnOnWaterPump = latest.moisture.value < greenhouseResponse.data.moisture;
+          // Automatic control logic
+          const shouldTurnOnVentilation = latest.temperature.value > greenhouseResponse.data.temp;
+          const shouldTurnOnWaterPump = latest.moisture.value < greenhouseResponse.data.moisture;
 
-        setAutoControl({
-          waterPump: shouldTurnOnWaterPump,
-          ventilation: shouldTurnOnVentilation,
-        });
+          setAutoControl({
+            waterPump: shouldTurnOnWaterPump,
+            ventilation: shouldTurnOnVentilation,
+          });
+        } else {
+          setLatestData({
+            temperature: { value: "N/A", unit: "" },
+            humidity: { value: "N/A", unit: "" },
+            moisture: { value: "N/A", unit: "" },
+            water_pump: { status: "N/A" },
+            ventilation: { status: "N/A" },
+          });
+        }
 
         setLoading(false);
       } catch (error) {
@@ -97,7 +107,7 @@ const Body = () => {
     return <div className="text-center p-8 text-xl">Loading...</div>;
   }
 
-  if (!greenhouse || !latestData) {
+  if (!greenhouse) {
     return <div className="text-center p-8 text-xl">Greenhouse not found</div>;
   }
 
@@ -139,7 +149,7 @@ const Body = () => {
               className={`text-white font-bold py-2 px-4 rounded-md ${autoControl.waterPump ? 'bg-green-600' : 'bg-red-600'} transition duration-300`}
               onClick={toggleWaterPump}
             >
-              {autoControl.waterPump ? ' Water Pump On' : ' Water Pump Off'}
+              {autoControl.waterPump ? 'Water Pump On' : 'Water Pump Off'}
             </button>
             <button
               className={`text-white font-bold py-2 px-4 rounded-md ${autoControl.ventilation ? 'bg-green-600' : 'bg-red-600'} transition duration-300`}
