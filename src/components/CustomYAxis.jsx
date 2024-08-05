@@ -1,4 +1,3 @@
-import React from 'react';
 import { YAxis } from 'recharts';
 
 const CustomYAxis = () => {

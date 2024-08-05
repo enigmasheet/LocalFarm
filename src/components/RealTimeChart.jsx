@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
+import { useEffect, useState } from 'react';
 import { LineChart, Line, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import axios from 'axios';
 import CustomReferenceLine from './CustomReferenceLine';
@@ -8,8 +9,7 @@ import CustomYAxis from './CustomYAxis';
 const fetchRealTimeData = async (greenhouseId) => {
   try {
     const response = await axios.get(`http://localhost:3000/realTimeData`);
-    const filteredData = response.data.filter(entry => String(entry.greenhouseId) === String(greenhouseId)) || [];
-    return filteredData;
+    return response.data.filter(entry => String(entry.greenhouseId) === String(greenhouseId)) || [];
   } catch (error) {
     console.error("Error fetching real-time data:", error);
     return [];
@@ -50,17 +50,11 @@ const RealTimeChart = ({ greenhouseId }) => {
 
     const getThresholds = async () => {
       const fetchedThresholds = await fetchGreenhouseThresholds(greenhouseId);
-      const humidityThreshold = Number(fetchedThresholds.humidity) || 0;
-      const moistureThreshold = Number(fetchedThresholds.moisture) || 0;
-      const temperatureThreshold = Number(fetchedThresholds.temp) || 0;
-
-      if (isMounted) {
-        setThresholds({
-          humidity: humidityThreshold,
-          moisture: moistureThreshold,
-          temperature: temperatureThreshold
-        });
-      }
+      setThresholds({
+        humidity: Number(fetchedThresholds.humidity) || 0,
+        moisture: Number(fetchedThresholds.moisture) || 0,
+        temperature: Number(fetchedThresholds.temp) || 0
+      });
     };
 
     getData();
@@ -116,6 +110,10 @@ const RealTimeChart = ({ greenhouseId }) => {
       </ResponsiveContainer>
     </div>
   );
+};
+
+RealTimeChart.propTypes = {
+  greenhouseId: PropTypes.string.isRequired,
 };
 
 export default RealTimeChart;

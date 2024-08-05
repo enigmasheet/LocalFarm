@@ -1,5 +1,4 @@
-// src/Login.jsx
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { auth } from '../firebase-config'; // Import the initialized auth object
 import { signInWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
@@ -91,7 +90,7 @@ const Login = () => {
           >
             Forgot Password?
           </button>
-          <p className="mt-2">Don't have an account?</p>
+          <p className="mt-2">Don&apos;t have an account?</p>
           <button 
             onClick={handleRegister}
             className="bg-teal-500 text-white py-2 px-4 rounded-md mt-2 hover:bg-teal-600"

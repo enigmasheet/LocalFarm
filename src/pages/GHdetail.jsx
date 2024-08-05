@@ -1,5 +1,4 @@
 // src/pages/GHdetail.jsx
-import React from 'react';
 import Sidebar from '../components/Sidebar';
 import Body from '../components/Body';
 

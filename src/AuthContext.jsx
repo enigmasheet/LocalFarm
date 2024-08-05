@@ -1,6 +1,6 @@
-// src/AuthContext.jsx
-import React, { createContext, useState, useContext, useEffect } from 'react';
-import { auth } from './firebase-config'; // or wherever your Firebase config is
+import { createContext, useState, useContext, useEffect } from 'react';
+import PropTypes from 'prop-types';
+import { auth } from './firebase-config'; // Import the initialized auth object
 import { onAuthStateChanged } from 'firebase/auth';
 
 const AuthContext = createContext();
@@ -22,6 +22,10 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
+};
+
+AuthProvider.propTypes = {
+  children: PropTypes.node.isRequired,
 };
 
 export const useAuth = () => {
