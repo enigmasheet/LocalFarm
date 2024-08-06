@@ -1,3 +1,4 @@
+// src/pages/Login.jsx
 import { useState } from 'react';
 import { auth } from '../firebase-config'; // Import the initialized auth object
 import { signInWithEmailAndPassword } from 'firebase/auth';

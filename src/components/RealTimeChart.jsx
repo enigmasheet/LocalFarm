@@ -1,3 +1,4 @@
+// src/components/RealTimeChart.jsx
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { LineChart, Line, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';

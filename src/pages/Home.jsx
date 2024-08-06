@@ -1,3 +1,4 @@
+// src/pages/Home.jsx
 import Sidebar from '../components/Sidebar';
 
 const Home = () => {

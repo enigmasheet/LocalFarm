@@ -1,3 +1,4 @@
+// src/components/GHcard.jsx
 import PropTypes from 'prop-types';
 import { Link } from "react-router-dom";
 

@@ -1,3 +1,4 @@
+// src/components/LayOut.jsx
 import PropTypes from 'prop-types';
 import Navbar from './Navbar';
 import Footer from './Footer';

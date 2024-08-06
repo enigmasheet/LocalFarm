@@ -1,3 +1,4 @@
+// src/components/GHlist.jsx
 import {useState,useEffect} from 'react'
 import GHcard from './GHcard'
 import axios from 'axios'

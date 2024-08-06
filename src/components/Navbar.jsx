@@ -1,3 +1,4 @@
+// src/components/Navbar.jsx
 import { Link } from "react-router-dom";
 import { useAuth } from '../AuthContext'; // Import the useAuth hook
 import { auth } from '../firebase-config'; // Import auth for signOut
