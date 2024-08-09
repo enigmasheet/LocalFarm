@@ -3,9 +3,9 @@
     {
       "name": "Greenhouse A",
       "plantname": "Lettuce",
-      "temp": "30",
-      "humidity": "55",
-      "moisture": "90",
+      "temp": "25",
+      "humidity": "65",
+      "moisture": "99",
       "id": 1
     },
     {
@@ -14,8 +14,7 @@
       "temp": "18",
       "humidity": "60",
       "moisture": "55",
-      "id": 2,
-      "ownerID": 1
+      "id": 2
     },
     {
       "name": "Greenhouse C",
@@ -26,21 +25,12 @@
       "id": 3
     },
     {
-      "name": "Greenhouse E",
+      "name": "Greenhouse D",
       "plantname": "Tomato",
       "temp": "25",
       "humidity": "50",
       "moisture": "45",
-      "id": 5,
-      "ownerID": 1
-    },
-    {
-      "name": "Greenhouse F",
-      "plantname": "Potato",
-      "temp": "30",
-      "humidity": "43",
-      "moisture": "32",
-      "id": 6
+      "id": 5
     }
   ],
   "contact": [
@@ -55,28 +45,6 @@
       "email": "janesmith@example.com",
       "message": "I am interested in the climate control features of the greenhouses.",
       "id": 2
-    }
-  ],
-  "users": [
-    {
-      "name": "21f-bit.95@texascollege.edu.np",
-      "role": "owner",
-      "id": 1
-    },
-    {
-      "name": "ran.abhayk@gmail.com",
-      "role": "owner",
-      "id": 2
-    },
-    {
-      "name": "abhaymandal321@gmail.com",
-      "role": "farmer",
-      "id": 3
-    },
-    {
-      "name": "newuser@example.com",
-      "role": "registrant",
-      "id": 4
     }
   ],
   "realTimeData": [

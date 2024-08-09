@@ -1,4 +1,4 @@
-import  { useState } from 'react';
+import { useState } from 'react';
 import GHlist from './GHlist';
 import { useAuth } from '../AuthContext';
 import { Link } from 'react-router-dom';
@@ -30,12 +30,10 @@ const Sidebar = () => {
 
         {/* GH List and Add Greenhouse Button */}
         <div className="flex-1 p-4 flex flex-col">
-          <div className="flex-1 overflow-y-auto">
-            <GHlist />
-          </div>
+          <GHlist />
 
           {/* Add Greenhouse Button */}
-          <div className="p-4 bg-gray-800">
+          <div className="mt-4">
             <Link to="/settings">
               <button className="w-full py-2 px-4 rounded-md bg-blue-600 hover:bg-blue-700 text-white font-semibold transition duration-300">
                 Add Greenhouse

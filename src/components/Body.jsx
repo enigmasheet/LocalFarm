@@ -1,4 +1,4 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import RealTimeChart from "./RealTimeChart";
@@ -13,6 +13,7 @@ const Body = () => {
     waterPump: false,
     ventilation: false,
   });
+  const [alertMessage, setAlertMessage] = useState("");
 
   useEffect(() => {
     const fetchGreenhouseData = async () => {
@@ -71,36 +72,44 @@ const Body = () => {
   const handleDelete = async () => {
     try {
       await axios.delete(`http://localhost:3000/greenhouses/${id}`);
-      window.location.href = "/";
+      setAlertMessage("Greenhouse deleted successfully!");
+      setTimeout(() => {
+        window.location.href = "/";
+      }, 1000);
     } catch (error) {
       console.error("Error deleting greenhouse:", error);
+      setAlertMessage("Error deleting greenhouse. Please try again.");
     }
   };
 
   const toggleWaterPump = () => {
+    const newStatus = latestData.water_pump.status === "on" ? "off" : "on";
     setLatestData((prevData) => ({
       ...prevData,
       water_pump: {
-        status: prevData.water_pump.status === 'on' ? 'off' : 'on',
+        status: newStatus,
       },
     }));
     setAutoControl((prevControl) => ({
       ...prevControl,
       waterPump: !prevControl.waterPump,
     }));
+    setAlertMessage(`Water Pump turned ${newStatus}`);
   };
 
   const toggleVentilation = () => {
+    const newStatus = latestData.ventilation.status === "on" ? "off" : "on";
     setLatestData((prevData) => ({
       ...prevData,
       ventilation: {
-        status: prevData.ventilation.status === 'on' ? 'off' : 'on',
+        status: newStatus,
       },
     }));
     setAutoControl((prevControl) => ({
       ...prevControl,
       ventilation: !prevControl.ventilation,
     }));
+    setAlertMessage(`Ventilation turned ${newStatus}`);
   };
 
   if (loading) {
@@ -113,6 +122,11 @@ const Body = () => {
 
   return (
     <div className="flex flex-col min-h-screen p-4 md:p-6 lg:p-8 bg-gray-50">
+      {alertMessage && (
+        <div className="mb-4 p-2 bg-green-200 text-green-800 rounded">
+          {alertMessage}
+        </div>
+      )}
       <div className="flex flex-col lg:flex-row gap-8 h-full">
         {/* Chart */}
         <div className="flex-1 bg-white p-6 rounded-lg shadow-lg flex flex-col">

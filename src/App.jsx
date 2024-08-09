@@ -9,6 +9,7 @@ import { AuthProvider } from './AuthContext';
 import Layout from './components/LayOut';
 import ForgotPassword from './pages/ForgotPassword';
 import ProtectedRoute from './components/ProtectedRoute';
+import FAQ from './pages/FAQ';
 
 const App = () => {
   return (
@@ -21,6 +22,7 @@ const App = () => {
           <Route path="/register" element={<Register />} />
           <Route path="/login" element={<Login />} />
           <Route path="/:id" element={<GHdetail />} />
+          <Route path="/faq" element={<FAQ />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
         </Routes>
       </Layout>

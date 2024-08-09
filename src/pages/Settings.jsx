@@ -11,6 +11,7 @@ const Settings = () => {
     humidity: "",
     moisture: "",
   });
+  const [alertMessage, setAlertMessage] = useState("");
 
   useEffect(() => {
     axios
@@ -24,7 +25,9 @@ const Settings = () => {
   const handleSelectChange = (e) => {
     const greenhouseId = e.target.value;
     if (greenhouseId) {
-      const greenhouse = greenhouses.find((g) => parseInt(g.id) === parseInt(greenhouseId));
+      const greenhouse = greenhouses.find(
+        (g) => parseInt(g.id) === parseInt(greenhouseId)
+      );
       setSelectedGreenhouse(greenhouse);
       setFormData({
         name: greenhouse.name,
@@ -56,6 +59,18 @@ const Settings = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
+    // Check for empty fields
+    if (
+      !formData.name ||
+      !formData.plantname ||
+      !formData.temp ||
+      !formData.humidity ||
+      !formData.moisture
+    ) {
+      setAlertMessage("Please fill in all fields before saving.");
+      return;
+    }
+
     const method = selectedGreenhouse ? "put" : "post";
     const url = selectedGreenhouse
       ? `http://localhost:3000/greenhouses/${selectedGreenhouse.id}`
@@ -76,8 +91,10 @@ const Settings = () => {
               g.id === response.data.id ? response.data : g
             )
           );
+          setAlertMessage("Greenhouse updated successfully!");
         } else {
           setGreenhouses([...greenhouses, response.data]);
+          setAlertMessage("Greenhouse added successfully!");
         }
         setSelectedGreenhouse(null);
         setFormData({
@@ -88,12 +105,20 @@ const Settings = () => {
           moisture: "",
         });
       })
-      .catch((error) => console.error("Error updating greenhouse:", error));
+      .catch((error) => {
+        console.error("Error updating greenhouse:", error);
+        setAlertMessage("Error saving greenhouse. Please try again.");
+      });
   };
 
   return (
     <div className="max-w-md mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Greenhouse Settings</h1>
+      {alertMessage && (
+        <div className="mb-4 p-2 bg-green-200 text-green-800 rounded">
+          {alertMessage}
+        </div>
+      )}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block text-gray-700">Select Greenhouse</label>

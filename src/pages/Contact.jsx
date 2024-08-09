@@ -1,6 +1,5 @@
-// src/pages/Contact.jsx
 import { useState } from 'react';
-import axios from 'axios';
+import emailjs from 'emailjs-com';
 
 const Contact = () => {
   const [formData, setFormData] = useState({
@@ -9,7 +8,8 @@ const Contact = () => {
     message: '',
   });
   const [errors, setErrors] = useState({});
-  const [success, setSuccess] = useState('');
+  const [alert, setAlert] = useState({ type: '', message: '' });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,8 +23,8 @@ const Contact = () => {
     const newErrors = {};
     if (!formData.name) newErrors.name = 'Name is required';
     if (!formData.email) newErrors.email = 'Email is required';
-    if (!formData.message) newErrors.message = 'Message is required';
     else if (!/\S+@\S+\.\S+/.test(formData.email)) newErrors.email = 'Email address is invalid';
+    if (!formData.message) newErrors.message = 'Message is required';
     return newErrors;
   };
 
@@ -36,28 +36,56 @@ const Contact = () => {
       return;
     }
 
-    axios.post('/api/contact', formData)
+    const contactParams = {
+      to_name: 'Recipient Name', // Replace with the recipient's name or make it dynamic
+      from_name: formData.name,
+      reply_to: formData.email, // This will set the sender's email as the reply-to address
+      message: formData.message,
+    };
+
+    setIsSubmitting(true);
+
+    // Send the contact message
+    emailjs.send('service_gb1vq59', 'template_18wla41', contactParams, 'xjteBpsWyHb4ugcsI')
       .then(() => {
-        setSuccess('Message sent successfully!');
-        setFormData({
-          name: '',
-          email: '',
-          message: '',
-        });
-        setErrors({});
+        // Send auto-reply to the sender
+        emailjs.send('service_gb1vq59', 'template_3ir5vtu', {
+          from_name: formData.name,
+          to_name: formData.name,
+          message: formData.message,
+        }, 'xjteBpsWyHb4ugcsI')
+          .then((response) => {
+            console.log('Auto-reply sent successfully!', response.status, response.text);
+            setAlert({ type: 'success', message: 'Message sent successfully!' });
+            setFormData({
+              name: '',
+              email: '',
+              message: '',
+            });
+            setErrors({});
+          })
+          .catch((error) => {
+            console.error('Auto-reply failed...', error);
+            setAlert({ type: 'error', message: 'There was an error sending the auto-reply!' });
+          });
       })
-      .catch(error => {
-        console.error('There was an error sending the message!', error);
-        setSuccess('');
-        setErrors({ submit: 'There was an error sending the message!' });
+      .catch((error) => {
+        console.error('Contact message failed...', error);
+        setAlert({ type: 'error', message: 'There was an error sending the message!' });
+      })
+      .finally(() => {
+        setIsSubmitting(false);
       });
   };
 
   return (
     <div className="max-w-md mx-auto p-4">
       <h1 className="text-2xl font-bold mb-4">Contact Us</h1>
-      {success && <div className="text-green-500 mb-4">{success}</div>}
-      {errors.submit && <div className="text-red-500 mb-4">{errors.submit}</div>}
+      {alert.message && (
+        <div className={`mb-4 p-2 rounded ${alert.type === 'success' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800'}`}>
+          {alert.message}
+        </div>
+      )}
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label htmlFor="name" className="block text-gray-700">Name</label>
@@ -97,9 +125,10 @@ const Contact = () => {
         </div>
         <button
           type="submit"
-          className="bg-blue-500 text-white p-2 rounded hover:bg-blue-700"
+          className={`bg-blue-500 text-white p-2 rounded hover:bg-blue-700 ${isSubmitting ? 'opacity-50 cursor-not-allowed' : ''}`}
+          disabled={isSubmitting}
         >
-          Send Message
+          {isSubmitting ? 'Sending...' : 'Send Message'}
         </button>
       </form>
     </div>

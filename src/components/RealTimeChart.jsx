@@ -1,4 +1,3 @@
-// src/components/RealTimeChart.jsx
 import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 import { LineChart, Line, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
@@ -70,9 +69,9 @@ const RealTimeChart = ({ greenhouseId }) => {
   }, [greenhouseId]);
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-4">
-      <ResponsiveContainer width="100%" height={400}>
-        <LineChart data={data} margin={{ top: 5, right: 30, left: 20, bottom: 5 }}>
+    <div className="w-full max-w-5xl mx-auto p-6"> {/* Increase max-width and padding */}
+      <ResponsiveContainer width="100%" height={500}> {/* Increase height */}
+        <LineChart data={data} margin={{ top: 10, right: 30, left: 20, bottom: 10 }}> {/* Adjust margins */}
           <CartesianGrid strokeDasharray="3 3" />
           <CustomXAxis dataKey="timestamp" />
           <CustomYAxis />

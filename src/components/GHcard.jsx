@@ -16,7 +16,7 @@ const GHcard = ({ GH }) => {
 // Add prop types validation
 GHcard.propTypes = {
   GH: PropTypes.shape({
-    id: PropTypes.string.isRequired,
+    id: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
     plantname: PropTypes.string.isRequired,
   }).isRequired,
