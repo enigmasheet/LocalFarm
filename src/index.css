@@ -14,7 +14,22 @@ a {
     @apply text-teal-400 hover:text-teal-600 transition-colors;
 }
 
+/* Dark Mode Styles */
+.dark body {
+    @apply text-gray-200 bg-gray-900;
+}
 
+.dark a {
+    @apply text-teal-300 hover:text-teal-500;
+}
+
+.dark label {
+    @apply text-gray-300;
+}
+
+.dark select, .dark input, .dark textarea {
+    @apply border-gray-600 bg-gray-800 text-gray-200;
+}
 
 /* Form Elements */
 label {

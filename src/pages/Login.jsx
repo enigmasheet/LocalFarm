@@ -1,4 +1,3 @@
-// src/pages/Login.jsx
 import { useState } from 'react';
 import { auth } from '../firebase-config'; // Import the initialized auth object
 import { signInWithEmailAndPassword } from 'firebase/auth';
@@ -47,54 +46,56 @@ const Login = () => {
   };
 
   return (
-    <div className="h-[90vh] flex justify-center items-center px-4">
-      <div className="border shadow-md p-4 rounded-xl max-w-lg w-full">
-        <h1 className="text-teal-500 text-4xl font-bold text-center">Login</h1>
-        <form onSubmit={handleSubmit} className="space-y-3">
+    <div className="h-screen flex justify-center items-center px-4 bg-gray-50 dark:bg-gray-800">
+      <div className="border shadow-md p-6 rounded-xl max-w-lg w-full bg-white dark:bg-gray-900">
+        <h1 className="text-teal-500 text-4xl font-bold text-center mb-4 dark:text-teal-400">Login</h1>
+        <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email">Email</label>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
             <input
               type="email"
               name="email"
               id="email"
               value={formData.email}
               onChange={handleChange}
-              className="border rounded-md p-2"
+              className="border rounded-md p-3 w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-400 dark:focus:ring-teal-500 text-gray-900 dark:text-gray-300"
+              placeholder="Enter your email"
               required
             />
           </div>
           <div>
-            <label htmlFor="password">Password</label>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
             <input
               type="password"
               name="password"
               id="password"
               value={formData.password}
               onChange={handleChange}
-              className="border rounded-md p-2"
+              className="border rounded-md p-3 w-full bg-gray-100 dark:bg-gray-700 border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-400 dark:focus:ring-teal-500 text-gray-900 dark:text-gray-300"
+              placeholder="Enter your password"
               required
             />
           </div>
-          {error && <p className="text-red-500 text-center">{error}</p>}
+          {error && <p className="text-red-500 text-center mt-2">{error}</p>}
           <button 
             type="submit" 
-            className={`bg-teal-400 text-white p-2 my-4 w-full rounded-md ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            className={`bg-teal-500 text-white p-2 my-4 w-full rounded-md ${loading ? 'opacity-50 cursor-not-allowed' : ''} hover:bg-teal-600 dark:bg-teal-400 dark:hover:bg-teal-300`}
             disabled={loading}
           >
             {loading ? 'Logging in...' : 'Login'}
           </button>
         </form>
-        <div className="text-center">
+        <div className="text-center mt-4">
           <button 
             onClick={handleForgotPassword}
-            className="text-teal-500 hover:underline"
+            className="text-teal-500 hover:underline dark:text-teal-400"
           >
             Forgot Password?
           </button>
-          <p className="mt-2">Don&apos;t have an account?</p>
+          <p className="mt-2 text-gray-600 dark:text-gray-300">Don&apos;t have an account?</p>
           <button 
             onClick={handleRegister}
-            className="bg-teal-500 text-white py-2 px-4 rounded-md mt-2 hover:bg-teal-600"
+            className="bg-teal-500 text-white py-2 px-4 rounded-md mt-2 hover:bg-teal-600 dark:bg-teal-400 dark:hover:bg-teal-300"
           >
             Register
           </button>

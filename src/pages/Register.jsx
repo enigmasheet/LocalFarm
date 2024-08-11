@@ -1,5 +1,4 @@
-// src/Register.jsx
-import  { useState } from 'react';
+import { useState } from 'react';
 import { auth } from '../firebase-config'; // Import the initialized auth object
 import { createUserWithEmailAndPassword } from 'firebase/auth';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
@@ -69,47 +68,50 @@ const Register = () => {
   };
 
   return (
-    <div className="h-[90vh] flex justify-center items-center px-4 ">
-      <div className="border shadow-md p-6 rounded-xl max-w-lg w-full bg-white">
-        <h1 className="text-teal-500 text-4xl font-bold text-center mb-4">Register</h1>
+    <div className="h-screen flex justify-center items-center px-4 bg-gray-50 dark:bg-gray-800">
+      <div className="border shadow-md p-6 rounded-xl max-w-lg w-full bg-white dark:bg-gray-900">
+        <h1 className="text-teal-500 text-4xl font-bold text-center mb-4 dark:text-teal-400">Register</h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700">Email</label>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
             <input
               type="email"
               name="email"
               id="email"
               value={formData.email}
               onChange={handleChange}
-              className="border rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-teal-400"
+              className="border rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-teal-400 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
               placeholder="Enter your email"
               required
+              aria-required="true"
             />
           </div>
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-gray-700">Password</label>
+            <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
             <input
               type="password"
               name="password"
               id="password"
               value={formData.password}
               onChange={handleChange}
-              className="border rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-teal-400"
+              className="border rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-teal-400 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
               placeholder="Enter your password"
               required
+              aria-required="true"
             />
           </div>
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">Confirm Password</label>
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Confirm Password</label>
             <input
               type="password"
               name="confirmPassword"
               id="confirmPassword"
               value={formData.confirmPassword}
               onChange={handleChange}
-              className="border rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-teal-400"
+              className="border rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-teal-400 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
               placeholder="Confirm your password"
               required
+              aria-required="true"
             />
           </div>
           {error && <p className="text-red-500 text-center mt-2">{error}</p>}
@@ -117,15 +119,16 @@ const Register = () => {
             type="submit" 
             className={`bg-teal-500 text-white py-2 px-4 rounded-md w-full ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={loading}
+            aria-live="polite"
           >
             {loading ? 'Registering...' : 'Register'}
           </button>
         </form>
         <div className="text-center mt-4">
-          <p className="text-gray-600">Already have an account?</p>
+          <p className="text-gray-600 dark:text-gray-300">Already have an account?</p>
           <button 
             onClick={() => navigate('/login')}
-            className="text-teal-500 hover:underline mt-2"
+            className="text-teal-500 hover:underline mt-2 dark:text-teal-400"
           >
             Login
           </button>

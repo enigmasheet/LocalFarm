@@ -10,6 +10,8 @@ import Layout from './components/LayOut';
 import ForgotPassword from './pages/ForgotPassword';
 import ProtectedRoute from './components/ProtectedRoute';
 import FAQ from './pages/FAQ';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import TermsOfService from './pages/TermsOfService';
 
 const App = () => {
   return (
@@ -24,6 +26,8 @@ const App = () => {
           <Route path="/:id" element={<GHdetail />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicy/>} />
+          <Route path="/terms-of-service" element={<TermsOfService/>} /> 
         </Routes>
       </Layout>
     </AuthProvider>
