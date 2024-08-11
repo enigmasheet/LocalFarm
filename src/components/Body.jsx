@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import axios from "axios";
+import { ref, onValue, remove, update } from "firebase/database";
+import { database } from "../firebase-config";
 import RealTimeChart from "./RealTimeChart";
 
 const Body = () => {
@@ -9,116 +10,121 @@ const Body = () => {
   const [loading, setLoading] = useState(true);
   const [latestData, setLatestData] = useState(null);
   const [thresholds, setThresholds] = useState({});
-  const [autoControl, setAutoControl] = useState({
-    waterPump: false,
-    ventilation: false,
-  });
   const [alertMessage, setAlertMessage] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [autoControl, setAutoControl] = useState({ ventilation: false, waterPump: false });
 
   useEffect(() => {
-    const fetchGreenhouseData = async () => {
-      try {
-        const greenhouseResponse = await axios.get(
-          `http://localhost:3000/greenhouses/${id}`
-        );
-        setGreenhouse(greenhouseResponse.data);
-        setThresholds({
-          temperature: greenhouseResponse.data.temp,
-          humidity: greenhouseResponse.data.humidity,
-          moisture: greenhouseResponse.data.moisture,
-        });
+    const fetchGreenhouseData = () => {
+      const greenhouseRef = ref(database, `greenhouses/${id}`);
+      onValue(greenhouseRef, (snapshot) => {
+        const greenhouseData = snapshot.val();
 
-        const statusResponse = await axios.get(
-          `http://localhost:3000/realTimeData?greenhouseId=${id}`
-        );
-        const statusData = statusResponse.data;
+        if (greenhouseData) {
+          setGreenhouse(greenhouseData);
+          setThresholds({
+            temperature: greenhouseData.temp,
+            humidity: greenhouseData.humidity,
+            moisture: greenhouseData.moisture,
+          });
 
-        if (statusData.length > 0) {
-          const latest = statusData.reduce(
-            (latest, current) =>
-              new Date(current.timestamp) > new Date(latest.timestamp)
-                ? current
-                : latest,
-            statusData[0]
-          );
+          const realTimeDataRef = ref(database, `sensorData/${id}`);
+          onValue(realTimeDataRef, (snapshot) => {
+            const data = snapshot.val() || {};
+            const entries = Object.values(data);
 
-          setLatestData(latest);
+            if (entries.length > 0) {
+              const latest = entries.reduce(
+                (latest, current) =>
+                  new Date(current.timestamp) > new Date(latest.timestamp)
+                    ? current
+                    : latest,
+                entries[0]
+              );
 
-          // Automatic control logic
-          const shouldTurnOnVentilation =
-            latest.temperature.value > greenhouseResponse.data.temp;
-          const shouldTurnOnWaterPump =
-            latest.moisture.value < greenhouseResponse.data.moisture;
+              setLatestData(latest);
+              updateSystemState(latest);
+            } else {
+              setLatestData({
+                temperature: "N/A",
+                humidity: "N/A",
+                moisture: "N/A",
+                water_pump: { status: "N/A" },
+                ventilation: { status: "N/A" },
+              });
+            }
 
-          setAutoControl({
-            waterPump: shouldTurnOnWaterPump,
-            ventilation: shouldTurnOnVentilation,
+            setLoading(false);
           });
         } else {
-          setLatestData({
-            temperature: { value: "N/A", unit: "" },
-            humidity: { value: "N/A", unit: "" },
-            moisture: { value: "N/A", unit: "" },
-            water_pump: { status: "N/A" },
-            ventilation: { status: "N/A" },
-          });
+          setLoading(false);
         }
-
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setLoading(false);
-      }
+      });
     };
 
     fetchGreenhouseData();
-
-    // Update data every 60 seconds
-    const intervalId = setInterval(fetchGreenhouseData, 60000);
+    const intervalId = setInterval(fetchGreenhouseData, 60000); // Refresh data every 60 seconds
     return () => clearInterval(intervalId);
   }, [id]);
 
+  const updateSystemState = (latestData) => {
+    const { temperature, humidity, moisture } = latestData;
+    const { temperature: tempThreshold, humidity: humidityThreshold, moisture: moistureThreshold } = thresholds;
+
+    let ventilationStatus = autoControl.ventilation;
+    let waterPumpStatus = autoControl.waterPump;
+
+    if (parseFloat(temperature) > parseFloat(tempThreshold)) {
+      ventilationStatus = true;
+    } else if (parseFloat(temperature) < parseFloat(tempThreshold) - 1) {
+      ventilationStatus = false;
+    }
+
+    if (parseFloat(moisture) < parseFloat(moistureThreshold)) {
+      waterPumpStatus = true;
+    } else if (parseFloat(moisture) > parseFloat(moistureThreshold) + 5) {
+      waterPumpStatus = false;
+    }
+
+    if (parseFloat(humidity) > parseFloat(humidityThreshold)) {
+      ventilationStatus = true;
+    } else if (parseFloat(humidity) < parseFloat(humidityThreshold) - 5) {
+      ventilationStatus = false;
+    }
+
+    setAutoControl({ ventilation: ventilationStatus, waterPump: waterPumpStatus });
+
+    // Update the system state in the database
+    const systemStateRef = ref(database, `systemState/${id}`);
+    update(systemStateRef, {
+      ventilation: { status: ventilationStatus ? 'On' : 'Off' },
+      water_pump: { status: waterPumpStatus ? 'On' : 'Off' }
+    });
+  };
+
   const handleDelete = async () => {
+    if (!window.confirm("Are you sure you want to delete this greenhouse and its sensor data?")) {
+      return;
+    }
+
+    setDeleting(true);
     try {
-      await axios.delete(`http://localhost:3000/greenhouses/${id}`);
-      setAlertMessage("Greenhouse deleted successfully!");
+      const greenhouseRef = ref(database, `greenhouses/${id}`);
+      const sensorDataRef = ref(database, `sensorData/${id}`);
+
+      await remove(greenhouseRef);
+      await remove(sensorDataRef);
+
+      setAlertMessage("Greenhouse and sensor data deleted successfully!");
       setTimeout(() => {
         window.location.href = "/";
       }, 1000);
     } catch (error) {
-      console.error("Error deleting greenhouse:", error);
-      setAlertMessage("Error deleting greenhouse. Please try again.");
+      console.error("Error deleting greenhouse or sensor data:", error);
+      setAlertMessage("Error deleting greenhouse or sensor data. Please try again.");
+    } finally {
+      setDeleting(false);
     }
-  };
-
-  const toggleWaterPump = () => {
-    const newStatus = latestData.water_pump.status === "on" ? "off" : "on";
-    setLatestData((prevData) => ({
-      ...prevData,
-      water_pump: {
-        status: newStatus,
-      },
-    }));
-    setAutoControl((prevControl) => ({
-      ...prevControl,
-      waterPump: !prevControl.waterPump,
-    }));
-    setAlertMessage(`Water Pump turned ${newStatus}`);
-  };
-
-  const toggleVentilation = () => {
-    const newStatus = latestData.ventilation.status === "on" ? "off" : "on";
-    setLatestData((prevData) => ({
-      ...prevData,
-      ventilation: {
-        status: newStatus,
-      },
-    }));
-    setAutoControl((prevControl) => ({
-      ...prevControl,
-      ventilation: !prevControl.ventilation,
-    }));
-    setAlertMessage(`Ventilation turned ${newStatus}`);
   };
 
   if (loading) {
@@ -132,7 +138,13 @@ const Body = () => {
   return (
     <div className="flex flex-col min-h-screen p-4 md:p-6 lg:p-8 bg-gray-50 dark:bg-gray-900">
       {alertMessage && (
-        <div className="mb-4 p-2 bg-green-200 text-green-800 dark:bg-green-700 dark:text-green-100 rounded">
+        <div
+          className={`mb-4 p-2 rounded-lg ${
+            alertMessage.includes("Error")
+              ? "bg-red-200 text-red-800 dark:bg-red-700 dark:text-red-100"
+              : "bg-green-200 text-green-800 dark:bg-green-700 dark:text-green-100"
+          }`}
+        >
           {alertMessage}
         </div>
       )}
@@ -140,7 +152,7 @@ const Body = () => {
         {/* Chart */}
         <div className="flex-1 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg flex flex-col">
           <div className="flex-1 mb-6">
-            <RealTimeChart greenhouseId={id} thresholds={thresholds} />
+            <RealTimeChart greenhouseId={id} />
           </div>
         </div>
 
@@ -160,21 +172,15 @@ const Body = () => {
               <div className="space-y-2">
                 <p className="text-lg text-gray-800 dark:text-gray-300">
                   Temperature:{" "}
-                  <span className="font-bold">
-                    {latestData.temperature.value} {latestData.temperature.unit}
-                  </span>
+                  <span className="font-bold">{latestData?.temperature} °C</span>
                 </p>
                 <p className="text-lg text-gray-800 dark:text-gray-300">
                   Humidity:{" "}
-                  <span className="font-bold">
-                    {latestData.humidity.value} {latestData.humidity.unit}
-                  </span>
+                  <span className="font-bold">{latestData?.humidity} %</span>
                 </p>
                 <p className="text-lg text-gray-800 dark:text-gray-300">
                   Moisture:{" "}
-                  <span className="font-bold">
-                    {latestData.moisture.value} {latestData.moisture.unit}
-                  </span>
+                  <span className="font-bold">{latestData?.moisture} %</span>
                 </p>
               </div>
             </div>
@@ -200,27 +206,20 @@ const Body = () => {
           </div>
 
           <div className="flex flex-col gap-4">
+            <div className="text-white font-bold py-3 px-6 rounded-md bg-gray-600">
+              Water Pump Status:{" "}
+              <span className="font-bold">{autoControl.waterPump ? "On" : "Off"}</span>
+            </div>
+            <div className="text-white font-bold py-3 px-6 rounded-md bg-gray-600">
+              Ventilation Status:{" "}
+              <span className="font-bold">{autoControl.ventilation ? "On" : "Off"}</span>
+            </div>
             <button
-              className={`text-white font-bold py-2 px-4 rounded-md ${
-                autoControl.waterPump ? "bg-green-600" : "bg-red-600"
-              } transition duration-300`}
-              onClick={toggleWaterPump}
-            >
-              {autoControl.waterPump ? "Water Pump On" : "Water Pump Off"}
-            </button>
-            <button
-              className={`text-white font-bold py-2 px-4 rounded-md ${
-                autoControl.ventilation ? "bg-green-600" : "bg-red-600"
-              } transition duration-300`}
-              onClick={toggleVentilation}
-            >
-              {autoControl.ventilation ? "Ventilation On" : "Ventilation Off"}
-            </button>
-            <button
-              className="bg-red-600 text-white font-bold py-2 px-4 rounded-md w-full transition duration-300"
+              className={`text-white font-bold py-3 px-6 rounded-md transition duration-300 transform bg-red-600 hover:bg-red-700 ${deleting ? "opacity-50 cursor-not-allowed" : ""}`}
               onClick={handleDelete}
+              disabled={deleting}
             >
-              Delete Greenhouse
+              {deleting ? "Deleting..." : "Delete Greenhouse"}
             </button>
           </div>
         </div>

@@ -1,27 +1,54 @@
+// src/components/GHlist.jsx
 import { useState, useEffect } from 'react';
 import GHcard from './GHcard';
-import axios from 'axios';
+import { ref, onValue } from 'firebase/database';
+import { database } from '../firebase-config'; // Import the initialized database
 
 const GHlist = () => {
   const [GHs, setGHs] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    const getGHs = async () => {
+    const greenhouseRef = ref(database, 'greenhouses'); // Reference to the 'greenhouses' node
+
+    const unsubscribe = onValue(greenhouseRef, (snapshot) => {
       try {
-        const res = await axios.get('http://localhost:3000/greenhouses');
-        setGHs(res.data);
-      } catch (error) {
-        console.log(error);
+        const data = snapshot.val();
+        if (data) {
+          // Convert object to array
+          const greenhouseArray = Object.keys(data).map(key => ({
+            id: key, // Firebase keys are used as IDs
+            ...data[key]
+          }));
+          setGHs(greenhouseArray);
+        } else {
+          setGHs([]);
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
       }
-    };
-    getGHs();
+    }, {
+      onlyOnce: false, // Listen for updates continuously
+    });
+
+    return () => unsubscribe(); // Cleanup on unmount
   }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div>
-      {GHs?.map(GH => (
-        <GHcard key={GH.id} GH={GH} />
-      ))}
+      {GHs.length > 0 ? (
+        GHs.map(GH => (
+          <GHcard key={GH.id} GH={GH} />
+        ))
+      ) : (
+        <div>No greenhouses found</div>
+      )}
     </div>
   );
 };

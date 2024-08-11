@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+import { ref, set, update, remove, onValue } from "firebase/database";
+import { database } from '../firebase-config'; // Import Firebase config
 
 const Settings = () => {
   const [greenhouses, setGreenhouses] = useState([]);
@@ -14,19 +15,29 @@ const Settings = () => {
   const [alertMessage, setAlertMessage] = useState("");
 
   useEffect(() => {
-    axios
-      .get("http://localhost:3000/greenhouses")
-      .then((response) => {
-        setGreenhouses(response.data);
-      })
-      .catch((error) => console.error("Error fetching greenhouses:", error));
+    const greenhouseRef = ref(database, 'greenhouses');
+
+    const unsubscribe = onValue(greenhouseRef, (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const greenhouseArray = Object.keys(data).map(key => ({
+          id: key,
+          ...data[key],
+        }));
+        setGreenhouses(greenhouseArray);
+      } else {
+        setGreenhouses([]);
+      }
+    });
+
+    return () => unsubscribe(); // Cleanup on unmount
   }, []);
 
   const handleSelectChange = (e) => {
     const greenhouseId = e.target.value;
     if (greenhouseId) {
       const greenhouse = greenhouses.find(
-        (g) => parseInt(g.id) === parseInt(greenhouseId)
+        (g) => g.id === greenhouseId
       );
       setSelectedGreenhouse(greenhouse);
       setFormData({
@@ -71,29 +82,29 @@ const Settings = () => {
       return;
     }
 
-    const method = selectedGreenhouse ? "put" : "post";
-    const url = selectedGreenhouse
-      ? `http://localhost:3000/greenhouses/${selectedGreenhouse.id}`
-      : "http://localhost:3000/greenhouses";
+    const greenhouseRef = ref(database, `greenhouses/${selectedGreenhouse ? selectedGreenhouse.id : Date.now()}`);
 
-    axios({
-      method,
-      url,
-      data: {
-        ...formData,
-        ...(selectedGreenhouse ? { id: selectedGreenhouse.id } : {}),
-      },
-    })
-      .then((response) => {
+    const updateData = {
+      name: formData.name,
+      plantname: formData.plantname,
+      temp: formData.temp,
+      humidity: formData.humidity,
+      moisture: formData.moisture,
+    };
+
+    const action = selectedGreenhouse ? update(greenhouseRef, updateData) : set(greenhouseRef, updateData);
+
+    action
+      .then(() => {
         if (selectedGreenhouse) {
           setGreenhouses(
             greenhouses.map((g) =>
-              g.id === response.data.id ? response.data : g
+              g.id === selectedGreenhouse.id ? { ...g, ...formData } : g
             )
           );
           setAlertMessage("Greenhouse updated successfully!");
         } else {
-          setGreenhouses([...greenhouses, response.data]);
+          setGreenhouses([...greenhouses, { id: Date.now().toString(), ...formData }]);
           setAlertMessage("Greenhouse added successfully!");
         }
         setSelectedGreenhouse(null);
@@ -106,7 +117,7 @@ const Settings = () => {
         });
       })
       .catch((error) => {
-        console.error("Error updating greenhouse:", error);
+        console.error("Error saving greenhouse:", error);
         setAlertMessage("Error saving greenhouse. Please try again.");
       });
   };
