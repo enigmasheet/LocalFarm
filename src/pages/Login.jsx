@@ -28,7 +28,19 @@ const Login = () => {
       // Redirect user to the dashboard or home page
       navigate('/'); // Redirect to home page or dashboard
     } catch (err) {
-      setError('Failed to login. Please check your email and password.');
+      switch (err.code) {
+        case 'auth/invalid-email':
+          setError('Invalid email address.');
+          break;
+        case 'auth/user-not-found':
+          setError('No user found with this email.');
+          break;
+        case 'auth/wrong-password':
+          setError('Incorrect password.');
+          break;
+        default:
+          setError('Failed to login. Please try again.');
+      }
       console.error(err);
     } finally {
       setLoading(false);

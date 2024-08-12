@@ -2,6 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../AuthContext"; // Import the useAuth hook
 import { auth } from "../firebase-config"; // Import auth for signOut
 import ThemeToggle from "./ThemeToggle";
+import { FaSignOutAlt, FaUserPlus, FaSignInAlt, FaQuestionCircle, FaCog, FaEnvelope } from 'react-icons/fa';
 
 const Navbar = () => {
   const authContext = useAuth(); // Get the auth context
@@ -45,24 +46,30 @@ const Navbar = () => {
             <li>
               <Link
                 to="/contact"
-                className="hover:bg-gray-200 rounded-md py-2 px-4 transition-colors dark:hover:bg-gray-700"
+                className="flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md py-2 px-4 transition-colors"
+                aria-label="Contact Us"
               >
+                <FaEnvelope className="mr-2" />
                 Contact Us
               </Link>
             </li>
             <li>
               <Link
                 to="/faq"
-                className="hover:bg-gray-200 rounded-md py-2 px-4 transition-colors dark:hover:bg-gray-700"
+                className="flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md py-2 px-4 transition-colors"
+                aria-label="FAQ"
               >
+                <FaQuestionCircle className="mr-2" />
                 FAQ
               </Link>
             </li>
             <li>
               <Link
                 to="/settings"
-                className="hover:bg-gray-200 rounded-md py-2 px-4 transition-colors dark:hover:bg-gray-700"
+                className="flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md py-2 px-4 transition-colors"
+                aria-label="Settings"
               >
+                <FaCog className="mr-2" />
                 Settings
               </Link>
             </li>
@@ -72,26 +79,29 @@ const Navbar = () => {
             {user ? (
               <button
                 onClick={handleLogout}
-                className="bg-red-500 text-white py-2 px-4 rounded-md transition-transform transform hover:scale-105"
+                className="bg-red-500 text-white py-2 px-4 rounded-md transition-transform transform hover:scale-105 flex items-center"
                 aria-label="Logout"
               >
+                <FaSignOutAlt className="mr-2" />
                 Logout
               </button>
             ) : (
               <>
                 <Link to="/register">
                   <button
-                    className="bg-teal-400 text-white py-2 px-4 rounded-md transition-transform transform hover:scale-105"
+                    className="bg-teal-400 text-white py-2 px-4 rounded-md transition-transform transform hover:scale-105 flex items-center"
                     aria-label="Register"
                   >
+                    <FaUserPlus className="mr-2" />
                     Register
                   </button>
                 </Link>
                 <Link to="/login">
                   <button
-                    className="bg-teal-400 text-white py-2 px-4 rounded-md transition-transform transform hover:scale-105"
+                    className="bg-teal-400 text-white py-2 px-4 rounded-md transition-transform transform hover:scale-105 flex items-center"
                     aria-label="Login"
                   >
+                    <FaSignInAlt className="mr-2" />
                     Login
                   </button>
                 </Link>

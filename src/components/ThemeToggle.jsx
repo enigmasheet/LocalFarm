@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { FaSun, FaMoon } from 'react-icons/fa'; // Importing icons
 
 const ThemeToggle = () => {
   const [darkMode, setDarkMode] = useState(
@@ -11,8 +12,14 @@ const ThemeToggle = () => {
   }, [darkMode]);
 
   return (
-    <div className="flex items-center">
-     
+    <div className="flex items-center space-x-2">
+      {/* Sun Icon */}
+      <FaSun
+        className={`text-yellow-500 ${darkMode ? 'opacity-50' : 'opacity-100'} transition-opacity duration-300`}
+        aria-hidden="true"
+      />
+      
+      {/* Toggle Switch */}
       <label className="relative inline-flex items-center cursor-pointer">
         <input
           type="checkbox"
@@ -27,7 +34,12 @@ const ThemeToggle = () => {
           }`}
         ></div>
       </label>
-      
+
+      {/* Moon Icon */}
+      <FaMoon
+        className={`text-gray-300 ${darkMode ? 'opacity-100' : 'opacity-50'} transition-opacity duration-300`}
+        aria-hidden="true"
+      />
     </div>
   );
 };

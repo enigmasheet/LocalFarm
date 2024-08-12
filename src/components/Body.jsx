@@ -1,227 +1,206 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
-import { ref, onValue, remove, update } from "firebase/database";
+import { useParams, useNavigate } from "react-router-dom";
+import { ref, remove, get, update } from "firebase/database";
 import { database } from "../firebase-config";
 import RealTimeChart from "./RealTimeChart";
+import { FaWater, FaFan } from 'react-icons/fa';
 
 const Body = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [greenhouse, setGreenhouse] = useState(null);
   const [loading, setLoading] = useState(true);
   const [latestData, setLatestData] = useState(null);
   const [thresholds, setThresholds] = useState({});
-  const [alertMessage, setAlertMessage] = useState("");
   const [deleting, setDeleting] = useState(false);
-  const [autoControl, setAutoControl] = useState({ ventilation: false, waterPump: false });
+  const [systemState, setSystemState] = useState({ ventilation: 'N/A', waterPump: 'N/A' });
 
   useEffect(() => {
-    const fetchGreenhouseData = () => {
-      const greenhouseRef = ref(database, `greenhouses/${id}`);
-      onValue(greenhouseRef, (snapshot) => {
-        const greenhouseData = snapshot.val();
+    const fetchGreenhouseData = async () => {
+      setLoading(true);
+      try {
+        const greenhouseRef = ref(database, `greenhouses/${id}`);
+        const greenhouseSnapshot = await get(greenhouseRef);
+        const greenhouseData = greenhouseSnapshot.val();
 
         if (greenhouseData) {
           setGreenhouse(greenhouseData);
           setThresholds({
-            temperature: greenhouseData.temp,
-            humidity: greenhouseData.humidity,
-            moisture: greenhouseData.moisture,
+            temperature: greenhouseData.temp || "N/A",
+            humidity: greenhouseData.humidity || "N/A",
+            moisture: greenhouseData.moisture || "N/A",
           });
 
           const realTimeDataRef = ref(database, `sensorData/${id}`);
-          onValue(realTimeDataRef, (snapshot) => {
-            const data = snapshot.val() || {};
-            const entries = Object.values(data);
+          const dataSnapshot = await get(realTimeDataRef);
+          const data = dataSnapshot.val() || {};
+          const entries = Object.values(data);
 
-            if (entries.length > 0) {
-              const latest = entries.reduce(
-                (latest, current) =>
-                  new Date(current.timestamp) > new Date(latest.timestamp)
-                    ? current
-                    : latest,
-                entries[0]
-              );
+          if (entries.length > 0) {
+            const latest = entries.reduce((latest, current) =>
+              new Date(current.timestamp) > new Date(latest.timestamp) ? current : latest,
+              entries[0]
+            );
 
-              setLatestData(latest);
-              updateSystemState(latest);
-            } else {
-              setLatestData({
-                temperature: "N/A",
-                humidity: "N/A",
-                moisture: "N/A",
-                water_pump: { status: "N/A" },
-                ventilation: { status: "N/A" },
-              });
-            }
+            setLatestData(latest);
+          } else {
+            setLatestData({
+              temperature: "N/A",
+              humidity: "N/A",
+              moisture: "N/A",
+              timestamp: "N/A",
+            });
+          }
 
-            setLoading(false);
+          // Fetch current system state
+          const systemStateRef = ref(database, `systemState/${id}`);
+          const systemStateSnapshot = await get(systemStateRef);
+          const systemStateData = systemStateSnapshot.val() || {};
+          setSystemState({
+            ventilation: systemStateData.ventilation?.status || 'N/A',
+            waterPump: systemStateData.waterPump?.status || 'N/A',
           });
+
         } else {
-          setLoading(false);
+          setGreenhouse(null);
+          setLatestData({
+            temperature: "N/A",
+            humidity: "N/A",
+            moisture: "N/A",
+            timestamp: "N/A",
+          });
         }
-      });
+      } catch (error) {
+        console.error("Error fetching greenhouse data:", error);
+        setGreenhouse(null);
+        setLatestData({
+          temperature: "Error",
+          humidity: "Error",
+          moisture: "Error",
+          timestamp: "Error",
+        });
+      } finally {
+        setLoading(false);
+      }
     };
 
     fetchGreenhouseData();
-    const intervalId = setInterval(fetchGreenhouseData, 60000); // Refresh data every 60 seconds
+    const intervalId = setInterval(fetchGreenhouseData, 60000);
     return () => clearInterval(intervalId);
   }, [id]);
 
-  const updateSystemState = (latestData) => {
-    const { temperature, humidity, moisture } = latestData;
-    const { temperature: tempThreshold, humidity: humidityThreshold, moisture: moistureThreshold } = thresholds;
-
-    let ventilationStatus = autoControl.ventilation;
-    let waterPumpStatus = autoControl.waterPump;
-
-    if (parseFloat(temperature) > parseFloat(tempThreshold)) {
-      ventilationStatus = true;
-    } else if (parseFloat(temperature) < parseFloat(tempThreshold) - 1) {
-      ventilationStatus = false;
-    }
-
-    if (parseFloat(moisture) < parseFloat(moistureThreshold)) {
-      waterPumpStatus = true;
-    } else if (parseFloat(moisture) > parseFloat(moistureThreshold) + 5) {
-      waterPumpStatus = false;
-    }
-
-    if (parseFloat(humidity) > parseFloat(humidityThreshold)) {
-      ventilationStatus = true;
-    } else if (parseFloat(humidity) < parseFloat(humidityThreshold) - 5) {
-      ventilationStatus = false;
-    }
-
-    setAutoControl({ ventilation: ventilationStatus, waterPump: waterPumpStatus });
-
-    // Update the system state in the database
-    const systemStateRef = ref(database, `systemState/${id}`);
-    update(systemStateRef, {
-      ventilation: { status: ventilationStatus ? 'On' : 'Off' },
-      water_pump: { status: waterPumpStatus ? 'On' : 'Off' }
-    });
-  };
-
   const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete this greenhouse and its sensor data?")) {
-      return;
-    }
-
-    setDeleting(true);
-    try {
-      const greenhouseRef = ref(database, `greenhouses/${id}`);
-      const sensorDataRef = ref(database, `sensorData/${id}`);
-
-      await remove(greenhouseRef);
-      await remove(sensorDataRef);
-
-      setAlertMessage("Greenhouse and sensor data deleted successfully!");
-      setTimeout(() => {
-        window.location.href = "/";
-      }, 1000);
-    } catch (error) {
-      console.error("Error deleting greenhouse or sensor data:", error);
-      setAlertMessage("Error deleting greenhouse or sensor data. Please try again.");
-    } finally {
-      setDeleting(false);
+    if (window.confirm("Are you sure you want to delete this greenhouse? This action cannot be undone.")) {
+      setDeleting(true);
+      try {
+        await Promise.all([
+          remove(ref(database, `greenhouses/${id}`)),
+          remove(ref(database, `sensorData/${id}`)),
+          remove(ref(database, `systemState/${id}`)),
+        ]);
+        alert("Greenhouse and related data deleted successfully");
+        navigate("/");
+      } catch (error) {
+        console.error("Error deleting greenhouse data:", error);
+        alert("Error deleting greenhouse. Please try again later.");
+      } finally {
+        setDeleting(false);
+      }
     }
   };
+
+  
 
   if (loading) {
-    return <div className="text-center p-8 text-xl dark:text-gray-200">Loading...</div>;
-  }
-
-  if (!greenhouse) {
-    return <div className="text-center p-8 text-xl dark:text-gray-200">Greenhouse not found</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="flex items-center">
+          <svg className="animate-spin h-8 w-8 mr-3 text-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 0 1 16 0H4z"></path>
+          </svg>
+          <p className="text-lg font-medium">Loading greenhouse data...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="flex flex-col min-h-screen p-4 md:p-6 lg:p-8 bg-gray-50 dark:bg-gray-900">
-      {alertMessage && (
-        <div
-          className={`mb-4 p-2 rounded-lg ${
-            alertMessage.includes("Error")
-              ? "bg-red-200 text-red-800 dark:bg-red-700 dark:text-red-100"
-              : "bg-green-200 text-green-800 dark:bg-green-700 dark:text-green-100"
-          }`}
-        >
-          {alertMessage}
+    <div className="p-6 max-w-7xl mx-auto bg-white text-gray-900 dark:bg-gray-900 dark:text-gray-100 flex flex-col lg:flex-row">
+      <div className="lg:w-2/3 flex flex-col gap-6">
+        <h1 className="text-3xl font-bold mb-6 text-center">
+          {greenhouse?.name || `Greenhouse ${id}`} - {greenhouse?.plantname || "Unknown Plant"}
+        </h1>
+        <div className="bg-white p-4 rounded-lg shadow-md dark:bg-gray-800 mb-6">
+          <RealTimeChart greenhouseId={id} />
         </div>
-      )}
-      <div className="flex flex-col lg:flex-row gap-8 h-full">
-        {/* Chart */}
-        <div className="flex-1 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg flex flex-col">
-          <div className="flex-1 mb-6">
-            <RealTimeChart greenhouseId={id} />
+      </div>
+
+      <div className="lg:w-1/3 lg:pl-6 flex flex-col gap-6">
+        <div className="bg-gray-100 p-4 rounded-lg shadow-md dark:bg-gray-800 dark:text-gray-200">
+          <h2 className="text-xl font-semibold mb-4">Thresholds</h2>
+          <div className="flex flex-col gap-2">
+            <p className="flex items-center text-gray-700 dark:text-gray-300">
+              <span className="font-medium">Temperature:</span> {thresholds.temperature} °C
+            </p>
+            <p className="flex items-center text-gray-700 dark:text-gray-300">
+              <span className="font-medium">Humidity:</span> {thresholds.humidity} %
+            </p>
+            <p className="flex items-center text-gray-700 dark:text-gray-300">
+              <span className="font-medium">Moisture:</span> {thresholds.moisture} %
+            </p>
           </div>
         </div>
 
-        {/* Details and Controls */}
-        <div className="flex flex-col lg:w-1/3 bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg">
-          <div className="mb-8">
-            <h1 className="text-2xl md:text-3xl font-bold mb-2 text-gray-800 dark:text-gray-200">
-              {greenhouse.name}
-            </h1>
-            <h2 className="text-xl font-semibold mb-4 text-gray-600 dark:text-gray-300">
-              {greenhouse.plantname}
-            </h2>
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-400 mb-2">
-                Current Data
-              </h3>
-              <div className="space-y-2">
-                <p className="text-lg text-gray-800 dark:text-gray-300">
-                  Temperature:{" "}
-                  <span className="font-bold">{latestData?.temperature} °C</span>
-                </p>
-                <p className="text-lg text-gray-800 dark:text-gray-300">
-                  Humidity:{" "}
-                  <span className="font-bold">{latestData?.humidity} %</span>
-                </p>
-                <p className="text-lg text-gray-800 dark:text-gray-300">
-                  Moisture:{" "}
-                  <span className="font-bold">{latestData?.moisture} %</span>
-                </p>
+        <div className="bg-gray-100 p-4 rounded-lg shadow-md dark:bg-gray-800 dark:text-gray-200">
+          <h2 className="text-xl font-semibold mb-4">Latest Sensor Data</h2>
+          {latestData ? (
+            <div className="flex flex-col gap-4">
+              <div className="flex items-center">
+                <p className="text-gray-700 dark:text-gray-300 mr-4">Temperature: {latestData.temperature} °C</p>
+              </div>
+              <div className="flex items-center">
+                <p className="text-gray-700 dark:text-gray-300 mr-4">Humidity: {latestData.humidity} %</p>
+              </div>
+              <div className="flex items-center">
+                <p className="text-gray-700 dark:text-gray-300 mr-4">Moisture: {latestData.moisture} %</p>
+                
+              </div>
+              <div className="text-gray-500 mt-2 text-sm dark:text-gray-400">
+                Last updated: {latestData.timestamp !== "N/A" ? new Date(latestData.timestamp).toLocaleString() : "N/A"}
               </div>
             </div>
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-400 mb-2">
-                Threshold Data
-              </h3>
-              <div className="space-y-2">
-                <p className="text-lg text-gray-800 dark:text-gray-300">
-                  Temperature Threshold:{" "}
-                  <span className="font-bold">{thresholds.temperature} °C</span>
-                </p>
-                <p className="text-lg text-gray-800 dark:text-gray-300">
-                  Humidity Threshold:{" "}
-                  <span className="font-bold">{thresholds.humidity} %</span>
-                </p>
-                <p className="text-lg text-gray-800 dark:text-gray-300">
-                  Moisture Threshold:{" "}
-                  <span className="font-bold">{thresholds.moisture} %</span>
-                </p>
-              </div>
-            </div>
-          </div>
+          ) : (
+            <p className="text-gray-700 dark:text-gray-300">No sensor data available</p>
+          )}
+        </div>
 
+        <div className="bg-gray-100 p-4 rounded-lg shadow-md dark:bg-gray-800 dark:text-gray-200">
+          <h2 className="text-xl font-semibold mb-4">Current System State</h2>
           <div className="flex flex-col gap-4">
-            <div className="text-white font-bold py-3 px-6 rounded-md bg-gray-600">
-              Water Pump Status:{" "}
-              <span className="font-bold">{autoControl.waterPump ? "On" : "Off"}</span>
+            <div className="flex items-center">
+              <FaFan className={`text-2xl mr-2 ${systemState.ventilation === 'On' ? 'text-green-500' : 'text-red-500'}`} title={`Ventilation ${systemState.ventilation}`} />
+              <p className={`font-semibold text-lg ${systemState.ventilation === 'On' ? 'text-green-500' : 'text-red-500'}`}>
+                Ventilation: {systemState.ventilation}
+              </p>
             </div>
-            <div className="text-white font-bold py-3 px-6 rounded-md bg-gray-600">
-              Ventilation Status:{" "}
-              <span className="font-bold">{autoControl.ventilation ? "On" : "Off"}</span>
+            <div className="flex items-center">
+              <FaWater className={`text-2xl mr-2 ${systemState.waterPump === 'On' ? 'text-green-500' : 'text-red-500'}`} title={`Water Pump ${systemState.waterPump}`} />
+              <p className={`font-semibold text-lg ${systemState.waterPump === 'On' ? 'text-green-500' : 'text-red-500'}`}>
+                Water Pump: {systemState.waterPump}
+              </p>
             </div>
-            <button
-              className={`text-white font-bold py-3 px-6 rounded-md transition duration-300 transform bg-red-600 hover:bg-red-700 ${deleting ? "opacity-50 cursor-not-allowed" : ""}`}
-              onClick={handleDelete}
-              disabled={deleting}
-            >
-              {deleting ? "Deleting..." : "Delete Greenhouse"}
-            </button>
           </div>
+        </div>
+
+        <div className="text-center mt-6">
+          <button
+            className={`bg-red-500 text-white px-6 py-3 rounded-full shadow-md hover:bg-red-600 transition-colors duration-300 ${deleting ? "opacity-50 cursor-not-allowed" : ""}`}
+            onClick={handleDelete}
+            disabled={deleting}
+          >
+            {deleting ? "Deleting..." : "Delete Greenhouse"}
+          </button>
         </div>
       </div>
     </div>
