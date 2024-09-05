@@ -1,4 +1,3 @@
-Here's the updated `README.md` incorporating the additional features and technologies:
 
 ```markdown
 # LocalFarm - React Application
@@ -78,12 +77,3 @@ This will generate the `build/` folder with production-ready code.
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
 ```
-
-### Key Additions
-- **ECharts** for dynamic data visualization.
-- **Tailwind CSS** for responsive design.
-- **Light and Dark Mode** support.
-- **Firebase Authentication** for user sign-in.
-- **EmailJS** for email notifications.
-
-Feel free to let me know if there are any other details you’d like to include!
