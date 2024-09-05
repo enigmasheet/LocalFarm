@@ -1,3 +1,6 @@
+Here's the updated `README.md` in a single block with the corrected formatting:
+
+```markdown
 # LocalFarm - React Application
 
 **LocalFarm** is a modern React-based web application designed for managing local farms and greenhouses efficiently.
@@ -39,8 +42,41 @@ Ensure you have the following installed:
    ```bash
    git clone https://github.com/enigmasheet/LocalFarm.git
    cd LocalFarm
+   ```
 
 2. **Install dependencies:**
 
-  ```bash
-  npm install
+   ```bash
+   npm install
+   ```
+
+## Running the Application
+
+To start the development server:
+
+```bash
+npm run dev
+```
+
+Access the application at `http://localhost:5173`.
+
+To expose the app to your local network:
+
+```bash
+npm run dev -- --host 0.0.0.0
+```
+
+## Building for Production
+
+To create an optimized production build:
+
+```bash
+npm run build
+```
+
+This will generate a `build/` folder with production-ready code.
+
+## License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
+```
