@@ -36,25 +36,6 @@ Ensure you have the following installed:
 
 1. **Clone the repository:**
 
+   ```bash
    git clone https://github.com/enigmasheet/LocalFarm.git
    cd LocalFarm
-Install dependencies:
-
-npm install
-Running the Application
-To start the development server:
-
-npm run dev
-Access the application at http://localhost:5173.
-
-To expose the app to your local network:
-
-npm run dev -- --host 0.0.0.0
-Building for Production
-To create an optimized production build:
-
-npm run build
-This will generate a build/ folder with production-ready code.
-
-License
-This project is licensed under the MIT License. See the LICENSE file for more informatio
