@@ -227,7 +227,7 @@ const Register = () => {
           <p className="text-gray-600 dark:text-gray-300">Already have an account?</p>
           <button 
             onClick={() => navigate('/login')}
-            className="text-teal-500 hover:underline mt-2 dark:text-teal-400"
+            className="bg-teal-500 text-white py-2 px-4 rounded-md mt-2 hover:bg-teal-600 dark:bg-teal-400 dark:hover:bg-teal-300"
           >
             Login
           </button>
