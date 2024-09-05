@@ -1,4 +1,3 @@
-Here's the updated `README.md` in a single block with the corrected formatting:
 
 ```markdown
 # LocalFarm - React Application
