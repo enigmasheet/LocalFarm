@@ -1,20 +1,31 @@
+Here's the updated `README.md` incorporating the additional features and technologies:
 
 ```markdown
-# React Application
+# LocalFarm - React Application
 
-This project is a React-based web application. This README provides instructions on how to set up and run the application locally.
+This project is a React-based web application for managing local farms and greenhouses.
 
-## Table of Contents
+### Final Year Project
+This project is submitted in partial fulfillment of the requirements for the Bachelor of Information Technology (BIT) degree at Texas College of Management and IT.  
+Developed by **Abhay Kumar Mandal**, BIT 2021 Fall.
 
-- [Prerequisites](#prerequisites)
-- [Installation](#installation)
-- [Running the Application](#running-the-application)
-- [Building for Production](#building-for-production)
-- [License](#license)
+## Features
+
+- **Add and Delete Greenhouses:** Users can add and remove greenhouses as per their needs.
+- **Role-based Access Control:** The system supports role-based access control where:
+  - **Farm Owners** can manage (add/edit/delete) greenhouses.
+  - **Farmers** have restricted access, allowing them to view and manage only specific greenhouses.
+- **Firebase Integration for Database:** Firebase is used to store user and greenhouse data securely.
+- **Dynamic Data Visualization:** Real-time data for temperature, humidity, and soil moisture is visualized using dynamic charts with **ECharts**.
+- **Threshold Monitoring:** Includes a feature to monitor sensor thresholds for greenhouse automation.
+- **Responsive Design:** The application is designed to be fully responsive across various devices using **Tailwind CSS**.
+- **Light and Dark Mode:** The application supports both light and dark mode for better user experience.
+- **User Authentication:** Firebase Authentication is used for secure user sign-in.
+- **Email Notifications:** Utilizes **EmailJS** for sending email notifications.
 
 ## Prerequisites
 
-Make sure you have the following installed on your system before running the project:
+Ensure you have the following installed:
 
 - **Node.js** (v12 or above)  
   [Download and Install Node.js](https://nodejs.org/)
@@ -26,54 +37,53 @@ Make sure you have the following installed on your system before running the pro
 
 1. **Clone the repository:**
 
-   If you haven't already cloned the project, run the following command:
-
    ```bash
-   git clone https://github.com/yourusername/your-repo.git
-   cd your-repo
+   git clone https://github.com/enigmasheet/LocalFarm.git
+   cd LocalFarm
    ```
 
 2. **Install dependencies:**
-
-   Navigate to the project folder and install the required dependencies:
 
    ```bash
    npm install
    ```
 
-   This will install all necessary Node modules listed in `package.json`.
-
 ## Running the Application
 
-To start the development server, run the following command:
+To start the development server:
 
 ```bash
-npm start
+npm run dev
 ```
 
-The application will be accessible in your browser at `http://localhost:3000`.
+The application will be available at `http://localhost:5173`.
 
-If you want to expose the React application to your local network, you can run it with the `--host` flag:
+To expose the app to your local network:
 
 ```bash
-npm start -- --host 0.0.0.0
+npm run dev -- --host 0.0.0.0
 ```
-
-This will allow other devices on the same network to access the app using your machine's IP address.
 
 ## Building for Production
 
-To create an optimized production build of the application, run:
+To create an optimized production build:
 
 ```bash
 npm run build
 ```
 
-This will generate a `build/` folder with the production-ready code. You can deploy this folder to any static site hosting service.
+This will generate the `build/` folder with production-ready code.
 
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
 ```
 
-This block contains everything you'll need for your `README.md`. Let me know if any adjustments are needed!
+### Key Additions
+- **ECharts** for dynamic data visualization.
+- **Tailwind CSS** for responsive design.
+- **Light and Dark Mode** support.
+- **Firebase Authentication** for user sign-in.
+- **EmailJS** for email notifications.
+
+Feel free to let me know if there are any other details you’d like to include!
