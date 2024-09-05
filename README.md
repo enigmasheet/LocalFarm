@@ -39,3 +39,8 @@ Ensure you have the following installed:
    ```bash
    git clone https://github.com/enigmasheet/LocalFarm.git
    cd LocalFarm
+
+2. **Install dependencies:**
+
+  ```bash
+  npm install
