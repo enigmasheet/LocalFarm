@@ -1,5 +1,3 @@
-
-```markdown
 # LocalFarm - React Application
 
 **LocalFarm** is a modern React-based web application designed for managing local farms and greenhouses efficiently.
@@ -75,7 +73,3 @@ npm run build
 
 This will generate a `build/` folder with production-ready code.
 
-## License
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
-```
