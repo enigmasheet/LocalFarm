@@ -1,31 +1,24 @@
 import { useState } from 'react';
 import { auth, database } from '../firebase-config'; // Import the initialized auth object and db
 import { createUserWithEmailAndPassword } from 'firebase/auth';
-import { ref, set, get } from 'firebase/database'; // Import ref, set, and get for database operations
+import { ref, set } from 'firebase/database'; // Import ref and set for database operations
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
 const Register = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    password: '',
-    confirmPassword: '',
-    role: '',
-    adminEmail: '' // New field for admin email
-  });
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [showAdminEmail, setShowAdminEmail] = useState(false); // State to toggle admin email input
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-
-    if (e.target.name === 'role' && e.target.value === 'Manager') {
-      setShowAdminEmail(true);
-    } else if (e.target.name === 'role' && e.target.value !== 'Manager') {
-      setShowAdminEmail(false);
-    }
+    const { name, value } = e.target;
+    if (name === 'name') setName(value);
+    if (name === 'email') setEmail(value);
+    if (name === 'password') setPassword(value);
+    if (name === 'confirmPassword') setConfirmPassword(value);
   };
 
   const handleSubmit = async (e) => {
@@ -33,9 +26,8 @@ const Register = () => {
     setLoading(true);
     setError('');
 
-    const { name, email, password, confirmPassword, role, adminEmail } = formData;
-
-    if (!name || !email || !password || !confirmPassword || !role || (role === 'Manager' && !adminEmail)) {
+    // Basic validations
+    if (!name || !email || !password || !confirmPassword) {
       setError('All fields are required.');
       setLoading(false);
       return;
@@ -59,64 +51,35 @@ const Register = () => {
 
       // Initialize user data
       const userData = {
-        name: name,
-        email: email,
-        role: role,
+        name,
+        email,
         uid: user.uid,
-        createdGreenhouses: [], // Initialize as empty array
-        managingGreenhouses: [] // Initialize as empty array
+        createdGreenhouses: [],
+        managingGreenhouses: []
       };
 
       // Save user data to the Realtime Database
-      await set(ref(database, 'users/' + user.uid), userData);
+      await set(ref(database, `users/${user.uid}`), userData);
 
-      // If role is Manager, update the admin association
-      if (role === 'Manager') {
-        // Fetch the UID of the admin based on the admin email
-        const adminSnapshot = await get(ref(database, 'users'));
-        let adminUID = null;
-        adminSnapshot.forEach((admin) => {
-          if (admin.val().email === adminEmail) {
-            adminUID = admin.val().uid;
-          }
-        });
-
-        if (adminUID) {
-          // Update the admin with managingGreenhouses
-          const adminRef = ref(database, `users/${adminUID}/managingGreenhouses`);
-          const adminData = (await get(adminRef)).val() || [];
-          adminData.push(user.uid); // Add the new manager's UID to the managingGreenhouses array
-          await set(adminRef, adminData);
-
-          // Update the manager with the associated admin UID
-          await set(ref(database, `users/${user.uid}/associatedAdmin`), adminUID);
-        } else {
-          setError('Admin email not found.');
-          setLoading(false);
-          return;
-        }
-      }
-
-      // Redirect user to the login page or dashboard
-      navigate('/login'); // Redirect to login page or dashboard
+      navigate('/login');
     } catch (err) {
-      // Handle different types of Firebase Auth errors
-      switch (err.code) {
-        case 'auth/invalid-email':
-          setError('Invalid email address.');
-          break;
-        case 'auth/email-already-in-use':
-          setError('Email already in use.');
-          break;
-        case 'auth/weak-password':
-          setError('Password is too weak. Please choose a stronger password.');
-          break;
-        default:
-          setError('Failed to register. Please try again.');
-      }
+      setError(getFirebaseErrorMessage(err.code));
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const getFirebaseErrorMessage = (code) => {
+    switch (code) {
+      case 'auth/invalid-email':
+        return 'Invalid email address.';
+      case 'auth/email-already-in-use':
+        return 'Email already in use.';
+      case 'auth/weak-password':
+        return 'Password is too weak. Please choose a stronger password.';
+      default:
+        return 'Failed to register. Please try again.';
     }
   };
 
@@ -131,89 +94,58 @@ const Register = () => {
               type="text"
               name="name"
               id="name"
-              value={formData.name}
+              value={name}
               onChange={handleChange}
               className="border rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-teal-400 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
               placeholder="Enter your name"
               required
-              aria-required="true"
             />
           </div>
+
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Email</label>
             <input
               type="email"
               name="email"
               id="email"
-              value={formData.email}
+              value={email}
               onChange={handleChange}
               className="border rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-teal-400 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
               placeholder="Enter your email"
               required
-              aria-required="true"
             />
           </div>
+
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Password</label>
             <input
               type="password"
               name="password"
               id="password"
-              value={formData.password}
+              value={password}
               onChange={handleChange}
               className="border rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-teal-400 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
               placeholder="Enter your password"
               required
-              aria-required="true"
             />
           </div>
+
           <div>
             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Confirm Password</label>
             <input
               type="password"
               name="confirmPassword"
               id="confirmPassword"
-              value={formData.confirmPassword}
+              value={confirmPassword}
               onChange={handleChange}
               className="border rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-teal-400 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
               placeholder="Confirm your password"
               required
-              aria-required="true"
             />
           </div>
-          <div>
-            <label htmlFor="role" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Role</label>
-            <select
-              name="role"
-              id="role"
-              value={formData.role}
-              onChange={handleChange}
-              className="border rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-teal-400 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
-              required
-              aria-required="true"
-            >
-              <option value="" disabled>Select your role</option>
-              <option value="Admin">Admin</option>
-              <option value="Manager">Manager</option>
-            </select>
-          </div>
-          {showAdminEmail && (
-            <div>
-              <label htmlFor="adminEmail" className="block text-sm font-medium text-gray-700 dark:text-gray-300">Admin Email</label>
-              <input
-                type="email"
-                name="adminEmail"
-                id="adminEmail"
-                value={formData.adminEmail}
-                onChange={handleChange}
-                className="border rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-teal-400 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
-                placeholder="Enter admin's email"
-                required={showAdminEmail}
-                aria-required={showAdminEmail}
-              />
-            </div>
-          )}
+
           {error && <p className="text-red-500 text-center mt-2">{error}</p>}
+
           <button 
             type="submit" 
             className={`bg-teal-500 text-white py-2 px-4 rounded-md w-full ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -223,6 +155,7 @@ const Register = () => {
             {loading ? 'Registering...' : 'Register'}
           </button>
         </form>
+
         <div className="text-center mt-4">
           <p className="text-gray-600 dark:text-gray-300">Already have an account?</p>
           <button 

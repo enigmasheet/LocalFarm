@@ -1,14 +1,12 @@
 import PropTypes from 'prop-types';
-import { Link } from "react-router-dom";
+import { Link } from 'react-router-dom';
 
 const GHcard = ({ GH }) => {
-  const id = Number(GH.id); // Convert id to a number
-
   return (
-    <Link to={`/${id}`}>
-      <div className="border p-2 rounded-lg hover:bg-slate-600 py-2 my-1">
-        <h1>{GH.name}</h1>
-        <h2>{GH.plantname}</h2>
+    <Link to={`/${GH.id}`}>
+      <div className="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 dark:bg-gray-800 py-2 my-1">
+        <h1 className="font-bold text-lg dark:text-white">{GH.name}</h1>
+        <h2 className="dark:text-gray-400">{GH.plantname}</h2>
       </div>
     </Link>
   );
@@ -16,7 +14,7 @@ const GHcard = ({ GH }) => {
 
 GHcard.propTypes = {
   GH: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired, // Allow both number and string
+    id: PropTypes.string.isRequired,
     name: PropTypes.string.isRequired,
     plantname: PropTypes.string.isRequired,
   }).isRequired,

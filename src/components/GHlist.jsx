@@ -1,27 +1,44 @@
-// src/components/GHlist.jsx
 import { useState, useEffect } from 'react';
-import GHcard from './GHcard';
 import { ref, onValue } from 'firebase/database';
-import { database } from '../firebase-config'; // Import the initialized database
+import { database, auth } from '../firebase-config'; // Import Firebase auth and database
+import GHcard from './GHcard';
 
 const GHlist = () => {
   const [GHs, setGHs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [user, setUser] = useState(null); // To store the current user
 
   useEffect(() => {
+    const unsubscribeAuth = auth.onAuthStateChanged((authUser) => {
+      if (authUser) {
+        setUser(authUser);
+        fetchGreenhouses(authUser.uid); // Fetch greenhouses for the current user
+      } else {
+        setUser(null);
+        setGHs([]); // Reset greenhouses if user logs out
+        setLoading(false);
+      }
+    });
+
+    return () => unsubscribeAuth(); // Cleanup the auth listener
+  }, []);
+
+  const fetchGreenhouses = (userId) => {
     const greenhouseRef = ref(database, 'greenhouses'); // Reference to the 'greenhouses' node
 
-    const unsubscribe = onValue(greenhouseRef, (snapshot) => {
+    onValue(greenhouseRef, (snapshot) => {
       try {
         const data = snapshot.val();
         if (data) {
-          // Convert object to array
-          const greenhouseArray = Object.keys(data).map(key => ({
-            id: key, // Firebase keys are used as IDs
-            ...data[key]
-          }));
-          setGHs(greenhouseArray);
+          const filteredGHs = Object.keys(data)
+            .map(key => ({
+              id: key,
+              ...data[key]
+            }))
+            .filter(greenhouse => greenhouse.createdBy === userId);
+
+          setGHs(filteredGHs);
         } else {
           setGHs([]);
         }
@@ -30,24 +47,39 @@ const GHlist = () => {
       } finally {
         setLoading(false);
       }
-    }, {
-      onlyOnce: false, // Listen for updates continuously
     });
+  };
 
-    return () => unsubscribe(); // Cleanup on unmount
-  }, []);
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen dark:bg-gray-900">
+        <p className="text-lg font-medium dark:text-white">Loading...</p>
+      </div>
+    );
+  }
 
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen dark:bg-gray-900">
+        <p className="text-lg font-medium text-red-500 dark:text-red-400">Error: {error}</p>
+      </div>
+    );
+  }
 
   return (
-    <div>
+    <div className="p-2  dark:bg-gray-900">
       {GHs.length > 0 ? (
-        GHs.map(GH => (
-          <GHcard key={GH.id} GH={GH} />
-        ))
+        <ul className="space-y-2">
+          {GHs.map((GH) => (
+            <li key={GH.id} className="border rounded-lg p-1 shadow-md bg-white dark:bg-gray-800 dark:text-white">
+              <GHcard GH={GH} />
+            </li>
+          ))}
+        </ul>
       ) : (
-        <div>No greenhouses found</div>
+        <div className="flex justify-center items-center h-screen dark:bg-gray-900">
+          <p className="text-lg font-medium dark:text-white">No greenhouses found for this user</p>
+        </div>
       )}
     </div>
   );
