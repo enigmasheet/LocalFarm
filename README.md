@@ -1,4 +1,5 @@
 # LocalFarm - React Application
+Hosted on Azure: https://delightful-forest-06fd04900.5.azurestaticapps.net/
 
 **LocalFarm** is a modern React-based web application designed for managing local farms and greenhouses efficiently.
 
