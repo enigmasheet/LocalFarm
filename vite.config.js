@@ -13,6 +13,6 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: 'build', // Ensure this matches the directory your Azure workflow expects
+    outDir: 'build', 
   },
 });
