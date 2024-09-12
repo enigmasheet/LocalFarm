@@ -29,8 +29,12 @@ const Sidebar = () => {
         } md:relative md:translate-x-0 transition-transform duration-300`}
       >
         {/* Sidebar Header */}
-        <div className="flex items-center justify-center py-4 bg-gray-200 dark:bg-gray-800 border-b border-gray-300 dark:border-gray-700">
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Greenhouse Manager</h1>
+        <div className="flex flex-col">
+          <div className="flex items-center justify-center py-4 bg-gray-200 dark:bg-gray-800 border-b border-gray-300 dark:border-gray-700">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+              Greenhouse Manager
+            </h1>
+          </div>
         </div>
 
         {/* GH List and Add Greenhouse Button */}

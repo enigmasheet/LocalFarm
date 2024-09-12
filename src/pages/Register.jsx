@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { auth, database } from '../firebase-config'; // Import the initialized auth object and db
-import { createUserWithEmailAndPassword } from 'firebase/auth';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
 import { ref, set } from 'firebase/database'; // Import ref and set for database operations
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
@@ -15,10 +15,22 @@ const Register = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === 'name') setName(value);
-    if (name === 'email') setEmail(value);
-    if (name === 'password') setPassword(value);
-    if (name === 'confirmPassword') setConfirmPassword(value);
+    switch (name) {
+      case 'name':
+        setName(value);
+        break;
+      case 'email':
+        setEmail(value);
+        break;
+      case 'password':
+        setPassword(value);
+        break;
+      case 'confirmPassword':
+        setConfirmPassword(value);
+        break;
+      default:
+        break;
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -46,6 +58,7 @@ const Register = () => {
     }
 
     try {
+      // Create user with email and password
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       const user = userCredential.user;
 
@@ -61,7 +74,11 @@ const Register = () => {
       // Save user data to the Realtime Database
       await set(ref(database, `users/${user.uid}`), userData);
 
-      navigate('/login');
+      // Sign in the user immediately after registration
+      await signInWithEmailAndPassword(auth, email, password);
+
+      // Navigate to the homepage 
+      navigate('/');
     } catch (err) {
       setError(getFirebaseErrorMessage(err.code));
       console.error(err);
@@ -99,6 +116,7 @@ const Register = () => {
               className="border rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-teal-400 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
               placeholder="Enter your name"
               required
+              aria-required="true"
             />
           </div>
 
@@ -113,6 +131,7 @@ const Register = () => {
               className="border rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-teal-400 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
               placeholder="Enter your email"
               required
+              aria-required="true"
             />
           </div>
 
@@ -127,6 +146,7 @@ const Register = () => {
               className="border rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-teal-400 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
               placeholder="Enter your password"
               required
+              aria-required="true"
             />
           </div>
 
@@ -141,6 +161,7 @@ const Register = () => {
               className="border rounded-md p-3 w-full focus:outline-none focus:ring-2 focus:ring-teal-400 dark:bg-gray-700 dark:text-gray-300 dark:border-gray-600"
               placeholder="Confirm your password"
               required
+              aria-required="true"
             />
           </div>
 
@@ -152,7 +173,15 @@ const Register = () => {
             disabled={loading}
             aria-live="polite"
           >
-            {loading ? 'Registering...' : 'Register'}
+            {loading ? (
+              <span className="flex items-center justify-center">
+                <svg className="animate-spin h-5 w-5 mr-3 text-white" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 000 8v4a8 8 0 01-8-8z"></path>
+                </svg>
+                Registering...
+              </span>
+            ) : 'Register'}
           </button>
         </form>
 

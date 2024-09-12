@@ -51,6 +51,7 @@ const Navbar = () => {
       navigate("/login"); // Redirect to login page
     } catch (error) {
       console.error("Error signing out:", error);
+      alert("There was an error logging out. Please try again.");
     }
   };
 
@@ -68,7 +69,7 @@ const Navbar = () => {
             <li>
               <Link
                 to="/contact"
-                className="flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md py-2 px-4 transition-colors"
+                className="flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md py-2 px-4 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-400 dark:focus:ring-teal-600"
                 aria-label="Contact Us"
               >
                 <FaEnvelope className="mr-2" />
@@ -78,7 +79,7 @@ const Navbar = () => {
             <li>
               <Link
                 to="/faq"
-                className="flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md py-2 px-4 transition-colors"
+                className="flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md py-2 px-4 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-400 dark:focus:ring-teal-600"
                 aria-label="FAQ"
               >
                 <FaQuestionCircle className="mr-2" />
@@ -88,7 +89,7 @@ const Navbar = () => {
             <li>
               <Link
                 to="/settings"
-                className="flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md py-2 px-4 transition-colors"
+                className="flex items-center hover:bg-gray-200 dark:hover:bg-gray-700 rounded-md py-2 px-4 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-400 dark:focus:ring-teal-600"
                 aria-label="Settings"
               >
                 <FaCog className="mr-2" />
@@ -101,7 +102,7 @@ const Navbar = () => {
             {user ? (
               <button
                 onClick={handleLogout}
-                className="bg-red-500 text-white py-2 px-4 rounded-md transition-transform transform hover:scale-105 flex items-center"
+                className="bg-red-500 text-white py-2 px-4 rounded-md transition-transform transform hover:scale-105 flex items-center focus:outline-none focus:ring-2 focus:ring-red-400"
                 aria-label="Logout"
               >
                 <FaSignOutAlt className="mr-2" />
@@ -111,7 +112,7 @@ const Navbar = () => {
               <>
                 <Link to="/register">
                   <button
-                    className="bg-teal-400 text-white py-2 px-4 rounded-md transition-transform transform hover:scale-105 flex items-center"
+                    className="bg-teal-400 text-white py-2 px-4 rounded-md transition-transform transform hover:scale-105 flex items-center focus:outline-none focus:ring-2 focus:ring-teal-300"
                     aria-label="Register"
                   >
                     <FaUserPlus className="mr-2" />
@@ -120,7 +121,7 @@ const Navbar = () => {
                 </Link>
                 <Link to="/login">
                   <button
-                    className="bg-teal-400 text-white py-2 px-4 rounded-md transition-transform transform hover:scale-105 flex items-center"
+                    className="bg-teal-400 text-white py-2 px-4 rounded-md transition-transform transform hover:scale-105 flex items-center focus:outline-none focus:ring-2 focus:ring-teal-300"
                     aria-label="Login"
                   >
                     <FaSignInAlt className="mr-2" />
