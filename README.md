@@ -1,10 +1,14 @@
 # LocalFarm - React Application
-Hosted on Azure: https://delightful-forest-06fd04900.5.azurestaticapps.net/
-#Credentials:
--Email: test@gmail.com
--Password: 123456
 
 **LocalFarm** is a modern React-based web application designed for managing local farms and greenhouses efficiently.
+
+Hosted on Azure: https://delightful-forest-06fd04900.5.azurestaticapps.net/
+ 
+ **Credentials**:
+
+ Email: test@gmail.com
+
+ Password: 123456
 
 ### Final Year Project
 This project is presented as a partial fulfillment of the Bachelor of Information Technology (BIT) degree at Texas College of Management and IT.  
