@@ -1,6 +1,6 @@
 # LocalFarm - React Application
 Hosted on Azure: https://delightful-forest-06fd04900.5.azurestaticapps.net/
-Credentials:
+#Credentials:
 -Email: test@gmail.com
 -Password: 123456
 
